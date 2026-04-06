@@ -1,120 +1,216 @@
 import { motion } from 'framer-motion';
 import { GlassCard } from '@/components/ui/glass-card';
-import { TrendingUp, DollarSign, Package, Users, AlertTriangle, Clock } from 'lucide-react';
+import {
+  DollarSign, TrendingUp, Clock, AlertTriangle, Truck, ShoppingCart,
+  Users, CreditCard, ArrowUpRight, ArrowDownRight, Loader2,
+} from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import {
+  AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
+  ResponsiveContainer, PieChart, Pie, Cell, Legend, ComposedChart, Line,
+} from 'recharts';
+import { useDashboardGestao } from '@/hooks/useDashboardGestao';
 
-const kpis = [
-  { label: 'Receita Mês', value: 'R$ 245.320', change: '+12.5%', icon: DollarSign, color: 'text-accent' },
-  { label: 'Pedidos Pendentes', value: '47', change: '-3', icon: Clock, color: 'text-warning' },
-  { label: 'Estoque Crítico', value: '8', change: '+2', icon: AlertTriangle, color: 'text-destructive' },
-  { label: 'Lucro Líquido', value: 'R$ 78.450', change: '+8.2%', icon: TrendingUp, color: 'text-success' },
+const fmt = (v: number) => v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const fmtK = (v: number) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v);
+
+const PIE_COLORS = [
+  'hsl(199, 89%, 48%)', 'hsl(221, 83%, 53%)', 'hsl(160, 60%, 45%)',
+  'hsl(38, 92%, 50%)', 'hsl(280, 65%, 60%)', 'hsl(0, 84%, 60%)',
 ];
 
-const revenueData = [
-  { month: 'Jan', receita: 185000, custo: 120000 },
-  { month: 'Fev', receita: 195000, custo: 125000 },
-  { month: 'Mar', receita: 210000, custo: 130000 },
-  { month: 'Abr', receita: 225000, custo: 135000 },
-  { month: 'Mai', receita: 215000, custo: 128000 },
-  { month: 'Jun', receita: 240000, custo: 140000 },
-  { month: 'Jul', receita: 235000, custo: 138000 },
-  { month: 'Ago', receita: 250000, custo: 142000 },
-  { month: 'Set', receita: 230000, custo: 136000 },
-  { month: 'Out', receita: 245000, custo: 145000 },
-  { month: 'Nov', receita: 260000, custo: 148000 },
-  { month: 'Dez', receita: 245320, custo: 150000 },
-];
+const tooltipStyle = {
+  background: 'rgba(15,23,42,0.95)',
+  border: '1px solid rgba(255,255,255,0.1)',
+  borderRadius: '12px',
+  color: '#f8fafc',
+  fontSize: '12px',
+};
 
-const departmentData = [
-  { dept: 'Comercial', valor: 95000 },
-  { dept: 'Marketing', valor: 45000 },
-  { dept: 'Logística', valor: 62000 },
-  { dept: 'Operações', valor: 43320 },
-];
-
-const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } };
-const container = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } };
+const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { duration: 0.4 } } };
+const container = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } };
 
 export function DashboardGestao() {
+  const d = useDashboardGestao();
+
+  if (d.loading) {
+    return (
+      <div className="flex items-center justify-center h-[50vh]">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  const kpis = [
+    { label: 'Faturamento Mês', value: `R$ ${fmt(d.faturamentoMes)}`, icon: DollarSign, color: 'text-accent', up: true },
+    { label: 'Lucro Líquido', value: `R$ ${fmt(d.lucroLiquido)}`, icon: TrendingUp, color: 'text-success', up: d.lucroLiquido > 0 },
+    { label: 'Pedidos em Aberto', value: String(d.pedidosAbertos), icon: Clock, color: 'text-warning', up: false },
+    { label: 'Pedidos Atrasados', value: String(d.pedidosAtrasados), icon: AlertTriangle, color: 'text-destructive', up: false },
+    { label: 'Estoque Crítico', value: String(d.estoqueCritico), icon: AlertTriangle, color: 'text-destructive', up: false },
+    { label: 'Pedidos Entregues', value: String(d.pedidosEntregues), icon: Truck, color: 'text-success', up: true },
+    { label: 'Comissão Comercial', value: `R$ ${fmt(d.comissaoComercial)}`, icon: Users, color: 'text-primary', up: true },
+    { label: 'Compras do Mês', value: `R$ ${fmt(d.comprasMes)}`, icon: CreditCard, color: 'text-accent', up: false },
+  ];
+
   return (
     <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
-      {/* KPIs */}
+      {/* KPIs Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {kpis.map((kpi) => (
           <motion.div key={kpi.label} variants={item}>
             <GlassCard hover glow className="relative overflow-hidden">
               <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">{kpi.label}</p>
-                  <p className={`text-3xl font-bold mt-1 ${kpi.color}`}>{kpi.value}</p>
-                  <p className="text-xs text-success mt-2">{kpi.change}</p>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{kpi.label}</p>
+                  <p className={`text-2xl font-bold mt-1.5 ${kpi.color} truncate`}>{kpi.value}</p>
                 </div>
-                <div className="p-3 rounded-xl bg-white/5">
-                  <kpi.icon className={`h-6 w-6 ${kpi.color}`} />
+                <div className="p-2.5 rounded-xl bg-white/5 shrink-0 ml-3">
+                  <kpi.icon className={`h-5 w-5 ${kpi.color}`} />
                 </div>
               </div>
-              <div className="absolute -bottom-4 -right-4 w-24 h-24 rounded-full bg-gradient-to-br from-primary/10 to-accent/10 blur-2xl" />
+              <div className="mt-2 flex items-center gap-1">
+                {kpi.up
+                  ? <ArrowUpRight className="w-3.5 h-3.5 text-success" />
+                  : <ArrowDownRight className="w-3.5 h-3.5 text-destructive" />}
+                <span className={`text-xs ${kpi.up ? 'text-success' : 'text-destructive'}`}>este mês</span>
+              </div>
+              <div className="absolute -bottom-6 -right-6 w-28 h-28 rounded-full bg-gradient-to-br from-primary/10 to-accent/10 blur-2xl" />
             </GlassCard>
           </motion.div>
         ))}
       </div>
 
-      {/* Charts */}
-      <motion.div variants={item}>
-        <GlassCard className="p-0">
-          <Tabs defaultValue="geral" className="w-full">
-            <div className="px-6 pt-6 pb-2 flex items-center justify-between">
-              <h2 className="text-lg font-semibold">Visão Geral</h2>
-              <TabsList className="bg-white/5 border border-white/10 rounded-xl">
-                <TabsTrigger value="geral" className="data-[state=active]:bg-primary/20 rounded-lg text-xs">Geral</TabsTrigger>
-                <TabsTrigger value="financeiro" className="data-[state=active]:bg-primary/20 rounded-lg text-xs">Financeiro</TabsTrigger>
-                <TabsTrigger value="logistica" className="data-[state=active]:bg-primary/20 rounded-lg text-xs">Logística</TabsTrigger>
-                <TabsTrigger value="comercial" className="data-[state=active]:bg-primary/20 rounded-lg text-xs">Comercial</TabsTrigger>
-              </TabsList>
+      {/* Charts Row 1 */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        {/* Vendas por mês */}
+        <motion.div variants={item}>
+          <GlassCard className="p-0">
+            <div className="px-6 pt-6 pb-2">
+              <h3 className="text-base font-semibold">Vendas & Lucro por Mês</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">Últimos 6 meses</p>
             </div>
-            <TabsContent value="geral" className="px-6 pb-6">
-              <div className="h-72">
+            <div className="px-4 pb-4 h-72">
+              <ResponsiveContainer width="100%" height="100%">
+                <ComposedChart data={d.vendasPorMes}>
+                  <defs>
+                    <linearGradient id="gradReceita" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="hsl(199, 89%, 48%)" stopOpacity={0.3} />
+                      <stop offset="100%" stopColor="hsl(199, 89%, 48%)" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                  <XAxis dataKey="month" stroke="rgba(255,255,255,0.3)" fontSize={11} />
+                  <YAxis stroke="rgba(255,255,255,0.3)" fontSize={11} tickFormatter={fmtK} />
+                  <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => `R$ ${fmt(v)}`} />
+                  <Area type="monotone" dataKey="receita" stroke="hsl(199, 89%, 48%)" fill="url(#gradReceita)" strokeWidth={2} name="Receita" />
+                  <Line type="monotone" dataKey="lucro" stroke="hsl(160, 60%, 45%)" strokeWidth={2} dot={false} name="Lucro" />
+                  <Bar dataKey="custo" fill="hsl(221, 83%, 53%)" opacity={0.4} radius={[4, 4, 0, 0]} name="Custo" />
+                </ComposedChart>
+              </ResponsiveContainer>
+            </div>
+          </GlassCard>
+        </motion.div>
+
+        {/* Produtos mais vendidos */}
+        <motion.div variants={item}>
+          <GlassCard className="p-0">
+            <div className="px-6 pt-6 pb-2">
+              <h3 className="text-base font-semibold">Produtos Mais Vendidos</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">Por receita total</p>
+            </div>
+            <div className="px-4 pb-4 h-72">
+              {d.produtosMaisVendidos.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={revenueData}>
-                    <defs>
-                      <linearGradient id="gradReceita" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="hsl(199, 89%, 48%)" stopOpacity={0.3} />
-                        <stop offset="100%" stopColor="hsl(199, 89%, 48%)" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                    <XAxis dataKey="month" stroke="rgba(255,255,255,0.3)" fontSize={12} />
-                    <YAxis stroke="rgba(255,255,255,0.3)" fontSize={12} tickFormatter={(v) => `${v/1000}k`} />
-                    <Tooltip contentStyle={{ background: 'rgba(15,23,42,0.9)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#f8fafc' }} />
-                    <Area type="monotone" dataKey="receita" stroke="hsl(199, 89%, 48%)" fill="url(#gradReceita)" strokeWidth={2} />
-                    <Area type="monotone" dataKey="custo" stroke="hsl(221, 83%, 53%)" fill="transparent" strokeWidth={2} strokeDasharray="5 5" />
-                  </AreaChart>
+                  <PieChart>
+                    <Pie
+                      data={d.produtosMaisVendidos}
+                      cx="50%" cy="50%"
+                      innerRadius={60} outerRadius={95}
+                      dataKey="receita"
+                      nameKey="name"
+                      paddingAngle={3}
+                      stroke="none"
+                    >
+                      {d.produtosMaisVendidos.map((_, i) => (
+                        <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => `R$ ${fmt(v)}`} />
+                    <Legend
+                      wrapperStyle={{ fontSize: '11px', color: 'hsl(215,20%,65%)' }}
+                      iconType="circle"
+                      iconSize={8}
+                    />
+                  </PieChart>
                 </ResponsiveContainer>
-              </div>
-            </TabsContent>
-            <TabsContent value="financeiro" className="px-6 pb-6">
-              <div className="h-72">
+              ) : (
+                <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
+                  Nenhum dado de vendas ainda
+                </div>
+              )}
+            </div>
+          </GlassCard>
+        </motion.div>
+      </div>
+
+      {/* Charts Row 2 */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        {/* Performance comercial */}
+        <motion.div variants={item}>
+          <GlassCard className="p-0">
+            <div className="px-6 pt-6 pb-2">
+              <h3 className="text-base font-semibold">Performance Comercial</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">Leads vs Pedidos Fechados</p>
+            </div>
+            <div className="px-4 pb-4 h-72">
+              {d.performanceComercial.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={departmentData}>
+                  <BarChart data={d.performanceComercial} layout="vertical">
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                    <XAxis dataKey="dept" stroke="rgba(255,255,255,0.3)" fontSize={12} />
-                    <YAxis stroke="rgba(255,255,255,0.3)" fontSize={12} tickFormatter={(v) => `${v/1000}k`} />
-                    <Tooltip contentStyle={{ background: 'rgba(15,23,42,0.9)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#f8fafc' }} />
-                    <Bar dataKey="valor" fill="hsl(221, 83%, 53%)" radius={[8, 8, 0, 0]} />
+                    <XAxis type="number" stroke="rgba(255,255,255,0.3)" fontSize={11} />
+                    <YAxis type="category" dataKey="responsavel" stroke="rgba(255,255,255,0.3)" fontSize={11} width={100} />
+                    <Tooltip contentStyle={tooltipStyle} />
+                    <Bar dataKey="leads" fill="hsl(199, 89%, 48%)" radius={[0, 4, 4, 0]} name="Leads" />
+                    <Bar dataKey="fechados" fill="hsl(160, 60%, 45%)" radius={[0, 4, 4, 0]} name="Fechados" />
                   </BarChart>
                 </ResponsiveContainer>
-              </div>
-            </TabsContent>
-            <TabsContent value="logistica" className="px-6 pb-6">
-              <div className="h-72 flex items-center justify-center text-muted-foreground">Dados de logística em breve</div>
-            </TabsContent>
-            <TabsContent value="comercial" className="px-6 pb-6">
-              <div className="h-72 flex items-center justify-center text-muted-foreground">Dados comerciais em breve</div>
-            </TabsContent>
-          </Tabs>
-        </GlassCard>
-      </motion.div>
+              ) : (
+                <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
+                  Nenhum lead cadastrado
+                </div>
+              )}
+            </div>
+          </GlassCard>
+        </motion.div>
+
+        {/* Giro de estoque */}
+        <motion.div variants={item}>
+          <GlassCard className="p-0">
+            <div className="px-6 pt-6 pb-2">
+              <h3 className="text-base font-semibold">Giro de Estoque</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">Entradas vs Saídas por produto</p>
+            </div>
+            <div className="px-4 pb-4 h-72">
+              {d.giroEstoque.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={d.giroEstoque}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                    <XAxis dataKey="name" stroke="rgba(255,255,255,0.3)" fontSize={10} />
+                    <YAxis stroke="rgba(255,255,255,0.3)" fontSize={11} />
+                    <Tooltip contentStyle={tooltipStyle} />
+                    <Bar dataKey="entradas" fill="hsl(199, 89%, 48%)" radius={[4, 4, 0, 0]} name="Entradas" />
+                    <Bar dataKey="saidas" fill="hsl(38, 92%, 50%)" radius={[4, 4, 0, 0]} name="Saídas" />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
+                  Nenhuma movimentação registrada
+                </div>
+              )}
+            </div>
+          </GlassCard>
+        </motion.div>
+      </div>
     </motion.div>
   );
 }
