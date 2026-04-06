@@ -51,6 +51,7 @@ export type Database = {
       }
       leads: {
         Row: {
+          cidade: string | null
           created_at: string
           email: string | null
           empresa: string | null
@@ -59,6 +60,7 @@ export type Database = {
           observacoes: string | null
           posicao: number
           prazo: string | null
+          prioridade: string
           produto_solicitado: string | null
           responsavel: string | null
           status: Database["public"]["Enums"]["lead_status"]
@@ -68,6 +70,7 @@ export type Database = {
           valor_estimado: number | null
         }
         Insert: {
+          cidade?: string | null
           created_at?: string
           email?: string | null
           empresa?: string | null
@@ -76,6 +79,7 @@ export type Database = {
           observacoes?: string | null
           posicao?: number
           prazo?: string | null
+          prioridade?: string
           produto_solicitado?: string | null
           responsavel?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
@@ -85,6 +89,7 @@ export type Database = {
           valor_estimado?: number | null
         }
         Update: {
+          cidade?: string | null
           created_at?: string
           email?: string | null
           empresa?: string | null
@@ -93,6 +98,7 @@ export type Database = {
           observacoes?: string | null
           posicao?: number
           prazo?: string | null
+          prioridade?: string
           produto_solicitado?: string | null
           responsavel?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
@@ -398,6 +404,10 @@ export type Database = {
         | "negociacao"
         | "pedido_fechado"
         | "perdido"
+        | "primeiro_contato"
+        | "qualificacao"
+        | "fechamento"
+        | "ganho"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -533,6 +543,10 @@ export const Constants = {
         "negociacao",
         "pedido_fechado",
         "perdido",
+        "primeiro_contato",
+        "qualificacao",
+        "fechamento",
+        "ganho",
       ],
     },
   },
