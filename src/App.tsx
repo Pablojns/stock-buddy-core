@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import Dashboard from "./pages/Dashboard";
 import Auth from "./pages/Auth";
+import Calculadora from "./pages/Calculadora";
 import NotFound from "./pages/NotFound";
 import { Loader2 } from "lucide-react";
 
@@ -36,6 +37,7 @@ const App = () => (
           <Routes>
             <Route path="/auth" element={<Auth />} />
             <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/calculadora" element={<ProtectedRoute><Calculadora /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
