@@ -14,6 +14,95 @@ export type Database = {
   }
   public: {
     Tables: {
+      contact_history: {
+        Row: {
+          created_at: string
+          descricao: string
+          id: string
+          lead_id: string
+          tipo: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          descricao: string
+          id?: string
+          lead_id: string
+          tipo?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          descricao?: string
+          id?: string
+          lead_id?: string
+          tipo?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contact_history_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      leads: {
+        Row: {
+          created_at: string
+          email: string | null
+          empresa: string | null
+          id: string
+          nome_cliente: string
+          observacoes: string | null
+          posicao: number
+          prazo: string | null
+          produto_solicitado: string | null
+          responsavel: string | null
+          status: Database["public"]["Enums"]["lead_status"]
+          telefone: string | null
+          updated_at: string
+          user_id: string
+          valor_estimado: number | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          empresa?: string | null
+          id?: string
+          nome_cliente: string
+          observacoes?: string | null
+          posicao?: number
+          prazo?: string | null
+          produto_solicitado?: string | null
+          responsavel?: string | null
+          status?: Database["public"]["Enums"]["lead_status"]
+          telefone?: string | null
+          updated_at?: string
+          user_id: string
+          valor_estimado?: number | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          empresa?: string | null
+          id?: string
+          nome_cliente?: string
+          observacoes?: string | null
+          posicao?: number
+          prazo?: string | null
+          produto_solicitado?: string | null
+          responsavel?: string | null
+          status?: Database["public"]["Enums"]["lead_status"]
+          telefone?: string | null
+          updated_at?: string
+          user_id?: string
+          valor_estimado?: number | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -78,6 +167,13 @@ export type Database = {
     }
     Enums: {
       app_role: "gestao" | "comercial" | "marketing" | "logistica"
+      lead_status:
+        | "novo_lead"
+        | "em_contato"
+        | "orcamento_enviado"
+        | "negociacao"
+        | "pedido_fechado"
+        | "perdido"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -206,6 +302,14 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["gestao", "comercial", "marketing", "logistica"],
+      lead_status: [
+        "novo_lead",
+        "em_contato",
+        "orcamento_enviado",
+        "negociacao",
+        "pedido_fechado",
+        "perdido",
+      ],
     },
   },
 } as const
