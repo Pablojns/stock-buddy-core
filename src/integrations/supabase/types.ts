@@ -103,6 +103,108 @@ export type Database = {
         }
         Relationships: []
       }
+      order_items: {
+        Row: {
+          created_at: string
+          id: string
+          is_packed: boolean
+          is_separated: boolean
+          is_shipped: boolean
+          order_id: string
+          product_code: string | null
+          product_id: string | null
+          product_image: string | null
+          product_name: string
+          quantity: number
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_packed?: boolean
+          is_separated?: boolean
+          is_shipped?: boolean
+          order_id: string
+          product_code?: string | null
+          product_id?: string | null
+          product_image?: string | null
+          product_name: string
+          quantity?: number
+          unit_price?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_packed?: boolean
+          is_separated?: boolean
+          is_shipped?: boolean
+          order_id?: string
+          product_code?: string | null
+          product_id?: string | null
+          product_image?: string | null
+          product_name?: string
+          quantity?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          client_document: string | null
+          client_name: string
+          completed_at: string | null
+          created_at: string
+          id: string
+          notes: string | null
+          order_number: string
+          photo_url: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          client_document?: string | null
+          client_name: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          order_number: string
+          photo_url?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          client_document?: string | null
+          client_name?: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          order_number?: string
+          photo_url?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           category: string
