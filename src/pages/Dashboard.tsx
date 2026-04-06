@@ -20,7 +20,7 @@ export default function Dashboard() {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center h-[60vh]">
-          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          <Loader2 className="w-6 h-6 animate-spin text-primary" />
         </div>
       </DashboardLayout>
     );
@@ -28,12 +28,12 @@ export default function Dashboard() {
 
   return (
     <DashboardLayout userRole={role} displayName={displayName}>
-      <div className="space-y-6">
+      <div className="space-y-4">
         <div>
-          <h1 className="text-3xl font-bold gradient-text">
+          <h1 className="text-xl font-bold text-foreground">
             Dashboard {roleLabels[role || 'gestao']}
           </h1>
-          <p className="text-muted-foreground text-sm mt-1">
+          <p className="text-muted-foreground text-xs mt-0.5">
             Energy Brands — {new Date().toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
           </p>
         </div>

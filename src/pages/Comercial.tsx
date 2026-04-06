@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Search, Filter, Users } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -72,54 +72,52 @@ export default function Comercial() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-4">
         {/* Header */}
-        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">CRM Comercial</h1>
-            <p className="text-sm text-muted-foreground">Pipeline de vendas • {leads.length} leads</p>
+            <h1 className="text-xl font-bold text-foreground">CRM Comercial</h1>
+            <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
+              <span>{leads.length} leads</span>
+              <span>Pipeline: <span className="text-accent font-semibold">{fmt(totalPipeline)}</span></span>
+              <span>Fechado: <span className="text-success font-semibold">{fmt(totalFechado)}</span></span>
+            </div>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="hidden md:flex items-center gap-4 text-sm">
-              <span className="text-muted-foreground">Pipeline: <span className="text-accent font-bold">{fmt(totalPipeline)}</span></span>
-              <span className="text-muted-foreground">Fechado: <span className="text-green-400 font-bold">{fmt(totalFechado)}</span></span>
-            </div>
+          <div className="flex items-center gap-2">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Buscar leads..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 w-56 bg-muted/30 border-border/50" />
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <Input placeholder="Buscar..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-8 h-8 w-44 text-xs bg-muted/30 border-border/50" />
             </div>
-            <Button onClick={() => handleAddClick('novo_lead')} className="gap-2">
-              <Plus className="h-4 w-4" /> Novo Lead
+            <Button onClick={() => handleAddClick('novo_lead')} size="sm" className="gap-1.5 h-8 text-xs">
+              <Plus className="h-3.5 w-3.5" /> Novo Lead
             </Button>
           </div>
-        </motion.div>
+        </div>
 
         {/* Kanban */}
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
           </div>
         ) : (
-          <div className="overflow-x-auto pb-4">
-            <div className="flex gap-4 min-w-max">
-              {KANBAN_COLUMNS.map((col, i) => (
-                <motion.div key={col.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
-                  <KanbanColumn
-                    {...col}
-                    leads={leadsByStatus[col.id]}
-                    onSelect={setSelectedLead}
-                    onDragStart={handleDragStart}
-                    onDrop={handleDrop}
-                    onAddClick={handleAddClick}
-                  />
-                </motion.div>
+          <div className="overflow-x-auto -mx-4 lg:-mx-6 px-4 lg:px-6 pb-2">
+            <div className="flex gap-3 min-w-max">
+              {KANBAN_COLUMNS.map((col) => (
+                <KanbanColumn
+                  key={col.id}
+                  {...col}
+                  leads={leadsByStatus[col.id]}
+                  onSelect={setSelectedLead}
+                  onDragStart={handleDragStart}
+                  onDrop={handleDrop}
+                  onAddClick={handleAddClick}
+                />
               ))}
             </div>
           </div>
         )}
       </div>
 
-      {/* Lead Form */}
       <LeadFormDialog
         open={formOpen}
         onClose={() => setFormOpen(false)}
@@ -127,7 +125,6 @@ export default function Comercial() {
         defaultStatus={formStatus}
       />
 
-      {/* Lead Detail Panel */}
       {selectedLead && (
         <LeadDetailPanel lead={selectedLead} onClose={() => setSelectedLead(null)} />
       )}
