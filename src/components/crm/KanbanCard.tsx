@@ -1,70 +1,98 @@
 import { memo, useRef } from 'react';
-import { Building2, Phone, Mail, User, GripVertical } from 'lucide-react';
+import { Building2, Phone, Mail, User, MapPin, Calendar, Clock } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import type { Lead } from '@/types/crm';
+import { PRIORITY_CONFIG } from '@/types/crm';
+import { useKanbanDnd } from './KanbanDndContext';
+import { format } from 'date-fns';
 
 interface Props {
   lead: Lead;
   onSelect: (lead: Lead) => void;
-  onDragStart: (e: React.DragEvent, lead: Lead) => void;
 }
 
-function KanbanCardBase({ lead, onSelect, onDragStart }: Props) {
+function KanbanCardBase({ lead, onSelect }: Props) {
+  const { startDrag } = useKanbanDnd();
   const valor = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(lead.valor_estimado || 0);
-  const cardRef = useRef<HTMLDivElement>(null);
+  const prio = PRIORITY_CONFIG[lead.prioridade] || PRIORITY_CONFIG.normal;
 
-  const handleDragStart = (e: React.DragEvent) => {
-    // Set drag image to the card itself for accurate cursor tracking
-    if (cardRef.current) {
-      const rect = cardRef.current.getBoundingClientRect();
-      e.dataTransfer.setDragImage(cardRef.current, e.clientX - rect.left, e.clientY - rect.top);
-    }
-    e.dataTransfer.effectAllowed = 'move';
-    onDragStart(e, lead);
+  const handlePointerDown = (e: React.PointerEvent) => {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    startDrag(lead, e);
   };
 
   return (
     <div
-      ref={cardRef}
       data-kanban-card
-      draggable
-      onDragStart={handleDragStart}
-      onClick={() => onSelect(lead)}
-      className="group relative bg-card/80 border border-border/40 rounded-lg p-3 cursor-pointer
-                 hover:border-primary/30 transition-all duration-150 active:opacity-70 select-none"
+      onPointerDown={handlePointerDown}
+      onClick={(e) => { e.stopPropagation(); onSelect(lead); }}
+      className="group relative bg-card/80 border border-border/40 rounded-xl p-3 cursor-grab
+                 hover:border-primary/30 transition-all duration-150 select-none touch-none"
     >
-      <div className="absolute top-2.5 right-2 opacity-0 group-hover:opacity-50 transition-opacity cursor-grab active:cursor-grabbing">
-        <GripVertical className="h-3.5 w-3.5 text-muted-foreground" />
-      </div>
+      {/* Priority stripe */}
+      <div className="absolute left-0 top-2 bottom-2 w-[3px] rounded-full" style={{ backgroundColor: prio.color }} />
 
-      <h4 className="font-medium text-foreground text-xs truncate pr-5">{lead.nome_cliente}</h4>
-
-      {lead.empresa && (
-        <div className="flex items-center gap-1 mt-1 text-[10px] text-muted-foreground">
-          <Building2 className="h-2.5 w-2.5 shrink-0" />
-          <span className="truncate">{lead.empresa}</span>
+      <div className="pl-2.5">
+        {/* Header */}
+        <div className="flex items-start justify-between gap-1">
+          <h4 className="text-xs font-semibold text-foreground truncate">{lead.nome_cliente}</h4>
+          <Badge variant="outline" className={`text-[8px] px-1 py-0 shrink-0 border ${prio.bg}`}>
+            {prio.label}
+          </Badge>
         </div>
-      )}
 
-      {lead.produto_solicitado && (
-        <p className="text-[10px] text-muted-foreground mt-0.5 truncate">{lead.produto_solicitado}</p>
-      )}
-
-      <div className="flex items-center justify-between mt-2 pt-1.5 border-t border-border/20">
-        <span className="text-xs font-bold text-accent">{valor}</span>
-        {lead.responsavel && (
-          <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
-            <User className="h-2.5 w-2.5" />
-            <span className="truncate max-w-[50px]">{lead.responsavel}</span>
+        {/* Company & City */}
+        {(lead.empresa || lead.cidade) && (
+          <div className="flex items-center gap-2 mt-1 text-[10px] text-muted-foreground">
+            {lead.empresa && (
+              <span className="flex items-center gap-0.5 truncate">
+                <Building2 className="h-2.5 w-2.5 shrink-0" /> {lead.empresa}
+              </span>
+            )}
+            {lead.cidade && (
+              <span className="flex items-center gap-0.5 truncate">
+                <MapPin className="h-2.5 w-2.5 shrink-0" /> {lead.cidade}
+              </span>
+            )}
           </div>
         )}
-      </div>
 
-      {(lead.telefone || lead.email) && (
-        <div className="flex gap-1.5 mt-1.5">
-          {lead.telefone && <Phone className="h-2.5 w-2.5 text-muted-foreground" />}
-          {lead.email && <Mail className="h-2.5 w-2.5 text-muted-foreground" />}
+        {/* Product */}
+        {lead.produto_solicitado && (
+          <p className="text-[10px] text-muted-foreground mt-0.5 truncate">{lead.produto_solicitado}</p>
+        )}
+
+        {/* Value */}
+        <p className="text-sm font-bold text-accent mt-1.5">{valor}</p>
+
+        {/* Footer row */}
+        <div className="flex items-center justify-between mt-1.5 pt-1.5 border-t border-border/20">
+          <div className="flex items-center gap-2 text-[9px] text-muted-foreground">
+            {lead.responsavel && (
+              <span className="flex items-center gap-0.5 truncate max-w-[60px]">
+                <User className="h-2.5 w-2.5 shrink-0" /> {lead.responsavel}
+              </span>
+            )}
+            {lead.prazo && (
+              <span className="flex items-center gap-0.5">
+                <Calendar className="h-2.5 w-2.5 shrink-0" />
+                {format(new Date(lead.prazo), 'dd/MM')}
+              </span>
+            )}
+          </div>
+          <div className="flex gap-1">
+            {lead.telefone && <Phone className="h-2.5 w-2.5 text-muted-foreground" />}
+            {lead.email && <Mail className="h-2.5 w-2.5 text-muted-foreground" />}
+          </div>
         </div>
-      )}
+
+        {/* Last contact */}
+        <div className="flex items-center gap-1 mt-1 text-[8px] text-muted-foreground/60">
+          <Clock className="h-2 w-2" />
+          Atualizado {format(new Date(lead.updated_at), 'dd/MM HH:mm')}
+        </div>
+      </div>
     </div>
   );
 }
