@@ -148,7 +148,7 @@ export function LeadDetailPanel({ lead, onClose }: Props) {
           <Button variant="outline" size="sm" onClick={openEmail} className="h-8 text-xs gap-1.5 border-primary/30 hover:bg-primary/10 text-primary flex-1">
             <Mail className="h-3.5 w-3.5" /> Email
           </Button>
-          <Button variant="outline" size="sm" className="h-8 text-xs gap-1.5 border-accent/30 hover:bg-accent/10 text-accent flex-1">
+          <Button variant="outline" size="sm" onClick={() => lead.telefone && window.open(`tel:${lead.telefone.replace(/\D/g, '')}`, '_self')} className="h-8 text-xs gap-1.5 border-accent/30 hover:bg-accent/10 text-accent flex-1">
             <Phone className="h-3.5 w-3.5" /> Ligar
           </Button>
           <Button variant="outline" size="sm" className="h-8 text-xs gap-1.5 border-warning/30 hover:bg-warning/10 text-warning flex-1">
