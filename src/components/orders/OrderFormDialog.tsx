@@ -58,8 +58,8 @@ export function OrderFormDialog({ open, onOpenChange, onSave, products, order }:
           productId: product.id,
           productName: product.name,
           productCode: product.code,
-          unitPrice: product.salePrice,
-          total: product.salePrice * updated[index].quantity,
+          unitPrice: product.sale_price,
+          total: product.sale_price * updated[index].quantity,
         };
       }
     } else if (field === 'quantity') {

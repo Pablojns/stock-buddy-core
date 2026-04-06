@@ -103,6 +103,81 @@ export type Database = {
         }
         Relationships: []
       }
+      products: {
+        Row: {
+          category: string
+          code: string
+          cost_price: number
+          created_at: string
+          current_quantity: number
+          description: string | null
+          entry_date: string | null
+          id: string
+          last_movement: string | null
+          location_level: string | null
+          location_shelf: string | null
+          location_street: string | null
+          minimum_quantity: number
+          name: string
+          ncm: string | null
+          reserved_quantity: number
+          restock_date: string | null
+          sale_price: number
+          sku: string | null
+          supplier: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string
+          code: string
+          cost_price?: number
+          created_at?: string
+          current_quantity?: number
+          description?: string | null
+          entry_date?: string | null
+          id?: string
+          last_movement?: string | null
+          location_level?: string | null
+          location_shelf?: string | null
+          location_street?: string | null
+          minimum_quantity?: number
+          name: string
+          ncm?: string | null
+          reserved_quantity?: number
+          restock_date?: string | null
+          sale_price?: number
+          sku?: string | null
+          supplier?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          code?: string
+          cost_price?: number
+          created_at?: string
+          current_quantity?: number
+          description?: string | null
+          entry_date?: string | null
+          id?: string
+          last_movement?: string | null
+          location_level?: string | null
+          location_shelf?: string | null
+          location_street?: string | null
+          minimum_quantity?: number
+          name?: string
+          ncm?: string | null
+          reserved_quantity?: number
+          restock_date?: string | null
+          sale_price?: number
+          sku?: string | null
+          supplier?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -129,6 +204,53 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      stock_movements: {
+        Row: {
+          created_at: string
+          id: string
+          new_quantity: number
+          notes: string | null
+          previous_quantity: number
+          product_id: string
+          product_name: string
+          quantity: number
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          new_quantity?: number
+          notes?: string | null
+          previous_quantity?: number
+          product_id: string
+          product_name: string
+          quantity: number
+          type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          new_quantity?: number
+          notes?: string | null
+          previous_quantity?: number
+          product_id?: string
+          product_name?: string
+          quantity?: number
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_movements_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {

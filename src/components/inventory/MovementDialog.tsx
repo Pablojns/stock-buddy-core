@@ -31,7 +31,7 @@ export function MovementDialog({ open, onOpenChange, products, onSubmit, presele
     }
   }, [open, preselectedProduct, preselectedType]);
 
-  const selectedProduct = products.find((p) => p.id === productId);
+  const selectedProduct = products.find(p => p.id === productId);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,21 +52,20 @@ export function MovementDialog({ open, onOpenChange, products, onSubmit, presele
             <Select value={productId} onValueChange={setProductId}>
               <SelectTrigger><SelectValue placeholder="Selecione o produto" /></SelectTrigger>
               <SelectContent>
-                {products.map((p) => (
-                  <SelectItem key={p.id} value={p.id}>
-                    {p.code} — {p.name}
-                  </SelectItem>
+                {products.map(p => (
+                  <SelectItem key={p.id} value={p.id}>{p.code} — {p.name}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
             {selectedProduct && (
-              <p className="text-xs text-muted-foreground">Saldo atual: <span className="font-semibold">{selectedProduct.currentQuantity}</span></p>
+              <p className="text-xs text-muted-foreground">
+                Atual: <span className="font-semibold">{selectedProduct.current_quantity}</span> · Reservado: <span className="text-amber-400">{selectedProduct.reserved_quantity}</span> · Disponível: <span className="text-emerald-400">{selectedProduct.current_quantity - selectedProduct.reserved_quantity}</span>
+              </p>
             )}
           </div>
-
           <div className="space-y-1.5">
             <Label>Tipo *</Label>
-            <Select value={type} onValueChange={(v) => setType(v as MovementType)}>
+            <Select value={type} onValueChange={v => setType(v as MovementType)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="entry">Entrada</SelectItem>
@@ -75,17 +74,14 @@ export function MovementDialog({ open, onOpenChange, products, onSubmit, presele
               </SelectContent>
             </Select>
           </div>
-
           <div className="space-y-1.5">
             <Label>Quantidade *</Label>
-            <Input type="number" min={1} required value={quantity} onChange={(e) => setQuantity(Number(e.target.value))} />
+            <Input type="number" min={1} required value={quantity} onChange={e => setQuantity(Number(e.target.value))} />
           </div>
-
           <div className="space-y-1.5">
             <Label>Observações</Label>
-            <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} />
+            <Textarea value={notes} onChange={e => setNotes(e.target.value)} rows={2} />
           </div>
-
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
             <Button type="submit">Confirmar</Button>
