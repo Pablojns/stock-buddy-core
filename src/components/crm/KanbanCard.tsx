@@ -1,5 +1,5 @@
-import { memo } from 'react';
-import { Building2, Phone, Mail, DollarSign, User, GripVertical } from 'lucide-react';
+import { memo, useRef } from 'react';
+import { Building2, Phone, Mail, User, GripVertical } from 'lucide-react';
 import type { Lead } from '@/types/crm';
 
 interface Props {
@@ -10,45 +10,61 @@ interface Props {
 
 function KanbanCardBase({ lead, onSelect, onDragStart }: Props) {
   const valor = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(lead.valor_estimado || 0);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  const handleDragStart = (e: React.DragEvent) => {
+    // Set drag image to the card itself for accurate cursor tracking
+    if (cardRef.current) {
+      const rect = cardRef.current.getBoundingClientRect();
+      e.dataTransfer.setDragImage(cardRef.current, e.clientX - rect.left, e.clientY - rect.top);
+    }
+    e.dataTransfer.effectAllowed = 'move';
+    onDragStart(e, lead);
+  };
 
   return (
     <div
+      ref={cardRef}
+      data-kanban-card
       draggable
-      onDragStart={(e) => onDragStart(e, lead)}
+      onDragStart={handleDragStart}
       onClick={() => onSelect(lead)}
-      className="group relative bg-card/80 backdrop-blur-sm border border-border/50 rounded-xl p-4 cursor-pointer
-                 hover:border-primary/40 hover:shadow-[0_0_20px_-5px_hsl(var(--primary)/0.2)] transition-all duration-200
-                 active:scale-[0.98] select-none"
+      className="group relative bg-card/80 border border-border/40 rounded-lg p-3 cursor-pointer
+                 hover:border-primary/30 transition-all duration-150 active:opacity-70 select-none"
     >
-      <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-60 transition-opacity">
-        <GripVertical className="h-4 w-4 text-muted-foreground" />
+      <div className="absolute top-2.5 right-2 opacity-0 group-hover:opacity-50 transition-opacity cursor-grab active:cursor-grabbing">
+        <GripVertical className="h-3.5 w-3.5 text-muted-foreground" />
       </div>
 
-      <h4 className="font-semibold text-foreground text-sm truncate pr-6">{lead.nome_cliente}</h4>
+      <h4 className="font-medium text-foreground text-xs truncate pr-5">{lead.nome_cliente}</h4>
 
       {lead.empresa && (
-        <div className="flex items-center gap-1.5 mt-1.5 text-xs text-muted-foreground">
-          <Building2 className="h-3 w-3 shrink-0" /> <span className="truncate">{lead.empresa}</span>
+        <div className="flex items-center gap-1 mt-1 text-[10px] text-muted-foreground">
+          <Building2 className="h-2.5 w-2.5 shrink-0" />
+          <span className="truncate">{lead.empresa}</span>
         </div>
       )}
 
       {lead.produto_solicitado && (
-        <p className="text-xs text-muted-foreground mt-1 truncate">{lead.produto_solicitado}</p>
+        <p className="text-[10px] text-muted-foreground mt-0.5 truncate">{lead.produto_solicitado}</p>
       )}
 
-      <div className="flex items-center justify-between mt-3 pt-2 border-t border-border/30">
-        <span className="text-sm font-bold text-accent">{valor}</span>
+      <div className="flex items-center justify-between mt-2 pt-1.5 border-t border-border/20">
+        <span className="text-xs font-bold text-accent">{valor}</span>
         {lead.responsavel && (
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-            <User className="h-3 w-3" /> <span className="truncate max-w-[60px]">{lead.responsavel}</span>
+          <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+            <User className="h-2.5 w-2.5" />
+            <span className="truncate max-w-[50px]">{lead.responsavel}</span>
           </div>
         )}
       </div>
 
-      <div className="flex gap-2 mt-2">
-        {lead.telefone && <Phone className="h-3 w-3 text-muted-foreground" />}
-        {lead.email && <Mail className="h-3 w-3 text-muted-foreground" />}
-      </div>
+      {(lead.telefone || lead.email) && (
+        <div className="flex gap-1.5 mt-1.5">
+          {lead.telefone && <Phone className="h-2.5 w-2.5 text-muted-foreground" />}
+          {lead.email && <Mail className="h-2.5 w-2.5 text-muted-foreground" />}
+        </div>
+      )}
     </div>
   );
 }
