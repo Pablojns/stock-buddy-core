@@ -127,7 +127,7 @@ export default function Comercial() {
       case 'funil':
         return <CrmFunnel leads={leads} onSelect={setSelectedLead} />;
       case 'clientes':
-        return <CrmClients leads={leads} onSelect={setSelectedLead} />;
+        return <CrmClients />;
       case 'followup':
         return <CrmFollowUp leads={leads} onSelect={setSelectedLead} />;
       case 'historico':
