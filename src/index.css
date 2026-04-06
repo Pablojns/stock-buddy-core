@@ -68,12 +68,12 @@
 
 @layer components {
   .glass-card {
-    @apply bg-white/5 backdrop-blur-xl border border-white/10
-           shadow-2xl transition-all duration-300 rounded-2xl;
+    @apply bg-white/[0.04] backdrop-blur-md border border-white/[0.08]
+           shadow-lg transition-all duration-200 rounded-xl;
   }
 
   .glass-card-hover {
-    @apply glass-card hover:bg-white/[0.08] hover:border-white/20 hover:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)];
+    @apply glass-card hover:bg-white/[0.06] hover:border-white/[0.12];
   }
 
   .glass-button {
@@ -94,7 +94,7 @@
   }
 
   .kpi-glow {
-    box-shadow: 0 0 40px -10px hsl(var(--accent) / 0.3);
+    box-shadow: 0 0 20px -8px hsl(var(--accent) / 0.15);
   }
 }
 

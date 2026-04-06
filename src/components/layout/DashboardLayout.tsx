@@ -1,6 +1,9 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import { SiteHeader } from './SiteHeader';
 import { SiteSidebar } from './SiteSidebar';
+import { Menu } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -9,12 +12,27 @@ interface DashboardLayoutProps {
 }
 
 export function DashboardLayout({ children, userRole, displayName }: DashboardLayoutProps) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-[hsl(221,83%,10%)] bg-grid-pattern">
-      <SiteHeader userRole={userRole} displayName={displayName} />
+    <div className="min-h-screen bg-background">
+      <SiteHeader userRole={userRole} displayName={displayName}>
+        <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" className="md:hidden text-muted-foreground">
+              <Menu className="h-5 w-5" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="p-0 w-64 bg-sidebar border-border/30">
+            <SiteSidebar onNavigate={() => setMobileOpen(false)} />
+          </SheetContent>
+        </Sheet>
+      </SiteHeader>
       <div className="flex">
-        <SiteSidebar />
-        <main className="flex-1 p-6 overflow-auto min-h-[calc(100vh-57px)]">
+        <div className="hidden md:block">
+          <SiteSidebar />
+        </div>
+        <main className="flex-1 min-w-0 p-4 lg:p-6 overflow-x-hidden">
           {children}
         </main>
       </div>
