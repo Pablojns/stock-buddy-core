@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import Dashboard from "./pages/Dashboard";
 import Auth from "./pages/Auth";
 import Calculadora from "./pages/Calculadora";
+import Comercial from "./pages/Comercial";
 import NotFound from "./pages/NotFound";
 import { Loader2 } from "lucide-react";
 
