@@ -14,6 +14,74 @@ export type Database = {
   }
   public: {
     Tables: {
+      clients: {
+        Row: {
+          cidade: string | null
+          classificacao: string
+          created_at: string
+          email: string | null
+          empresa: string | null
+          frequencia_compra: string | null
+          id: string
+          lead_id: string | null
+          nome_cliente: string
+          produto_recorrente: string | null
+          responsavel: string | null
+          telefone: string | null
+          total_comprado: number
+          total_pedidos: number
+          ultimo_pedido: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cidade?: string | null
+          classificacao?: string
+          created_at?: string
+          email?: string | null
+          empresa?: string | null
+          frequencia_compra?: string | null
+          id?: string
+          lead_id?: string | null
+          nome_cliente: string
+          produto_recorrente?: string | null
+          responsavel?: string | null
+          telefone?: string | null
+          total_comprado?: number
+          total_pedidos?: number
+          ultimo_pedido?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cidade?: string | null
+          classificacao?: string
+          created_at?: string
+          email?: string | null
+          empresa?: string | null
+          frequencia_compra?: string | null
+          id?: string
+          lead_id?: string | null
+          nome_cliente?: string
+          produto_recorrente?: string | null
+          responsavel?: string | null
+          telefone?: string | null
+          total_comprado?: number
+          total_pedidos?: number
+          ultimo_pedido?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clients_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contact_history: {
         Row: {
           created_at: string
