@@ -9,6 +9,7 @@ import Auth from "./pages/Auth";
 import Calculadora from "./pages/Calculadora";
 import Comercial from "./pages/Comercial";
 import Estoque from "./pages/Estoque";
+import Separacao from "./pages/Separacao";
 import NotFound from "./pages/NotFound";
 import { Loader2 } from "lucide-react";
 
