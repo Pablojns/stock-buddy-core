@@ -146,7 +146,7 @@ export function LeadDetailPanel({ lead, onClose }: Props) {
         {/* Quick Actions */}
         <div className="flex gap-1.5 mt-3">
           <Button variant="outline" size="sm" onClick={openWhatsApp} className="h-8 text-xs gap-1.5 border-emerald-500/30 hover:bg-emerald-500/10 text-emerald-400 flex-1">
-            <MessageCircle className="h-3.5 w-3.5" /> WhatsApp
+            <WhatsAppIcon className="h-3.5 w-3.5" /> WhatsApp
           </Button>
           <Button variant="outline" size="sm" onClick={openEmail} className="h-8 text-xs gap-1.5 border-primary/30 hover:bg-primary/10 text-primary flex-1">
             <Mail className="h-3.5 w-3.5" /> Email
