@@ -1,6 +1,6 @@
 import { memo, useRef } from 'react';
 import { Building2, Phone, Mail, User, MapPin, Calendar, Clock } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { WhatsAppIcon } from '@/components/icons/WhatsAppIcon';
 import type { Lead } from '@/types/crm';
 import { PRIORITY_CONFIG } from '@/types/crm';
 import { useKanbanDnd } from './KanbanDndContext';
