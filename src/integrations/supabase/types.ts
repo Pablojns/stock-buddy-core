@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      chat_messages: {
+        Row: {
+          channel: string
+          content: string
+          created_at: string
+          id: string
+          recipient_id: string | null
+          user_id: string
+        }
+        Insert: {
+          channel?: string
+          content: string
+          created_at?: string
+          id?: string
+          recipient_id?: string | null
+          user_id: string
+        }
+        Update: {
+          channel?: string
+          content?: string
+          created_at?: string
+          id?: string
+          recipient_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       clients: {
         Row: {
           cidade: string | null
