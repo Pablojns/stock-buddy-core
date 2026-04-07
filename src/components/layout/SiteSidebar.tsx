@@ -1,10 +1,11 @@
 import { Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, ShoppingBag, Calculator,
-  Package, Warehouse, Zap,
+  Package, Warehouse, MessageCircle, Shield, Zap,
 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
+import { useUserRole } from '@/hooks/useUserRole';
 
 const navItems = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -12,6 +13,7 @@ const navItems = [
   { href: '/calculadora', label: 'Calculadora', icon: Calculator },
   { href: '/estoque', label: 'Estoque', icon: Warehouse },
   { href: '/separacao', label: 'Separação', icon: Package },
+  { href: '/chat', label: 'Chat', icon: MessageCircle },
 ];
 
 interface SiteSidebarProps {
@@ -20,6 +22,7 @@ interface SiteSidebarProps {
 
 export function SiteSidebar({ onNavigate }: SiteSidebarProps) {
   const location = useLocation();
+  const { role } = useUserRole();
 
   return (
     <aside className="flex flex-col w-56 border-r border-border/30 bg-sidebar sticky top-14 h-[calc(100vh-3.5rem)]">
@@ -55,6 +58,19 @@ export function SiteSidebar({ onNavigate }: SiteSidebarProps) {
               </Link>
             );
           })}
+          {role === 'gestao' && (
+            <Link to="/admin" onClick={onNavigate}>
+              <div className={cn(
+                'flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors mt-2 border-t border-border/15 pt-3',
+                location.pathname === '/admin'
+                  ? 'bg-primary/15 text-primary'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
+              )}>
+                <Shield className="h-4 w-4 shrink-0" />
+                Admin
+              </div>
+            </Link>
+          )}
         </nav>
       </ScrollArea>
     </aside>
