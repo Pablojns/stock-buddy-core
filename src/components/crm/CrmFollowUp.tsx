@@ -2,7 +2,8 @@ import { useMemo } from 'react';
 import { GlassCard } from '@/components/ui/glass-card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { Phone, Mail, MessageCircle, FileText, Clock } from 'lucide-react';
+import { Phone, Mail, FileText, Clock } from 'lucide-react';
+import { WhatsAppIcon } from '@/components/icons/WhatsAppIcon';
 import { KANBAN_COLUMNS, type Lead } from '@/types/crm';
 import { useContactHistory } from '@/hooks/useLeads';
 import { format } from 'date-fns';
@@ -10,9 +11,11 @@ import { ptBR } from 'date-fns/locale';
 
 const fmt = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
+const WhatsAppIconWrapper = (props: any) => <WhatsAppIcon className={props.className || 'h-4 w-4'} />;
+
 const tipoIcons: Record<string, any> = {
   nota: FileText,
-  whatsapp: MessageCircle,
+  whatsapp: WhatsAppIconWrapper,
   email: Mail,
   ligação: Phone,
 };

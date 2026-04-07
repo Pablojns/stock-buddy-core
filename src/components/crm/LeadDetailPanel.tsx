@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import {
-  X, Phone, Mail, MessageCircle, FileText, Send, Calendar, Building2,
+  X, Phone, Mail, FileText, Send, Calendar, Building2,
   User, MapPin, Tag, Target, TrendingUp, Clock, Plus, ChevronDown,
   ChevronUp, Briefcase, Hash, Globe, Activity
 } from 'lucide-react';
+import { WhatsAppIcon } from '@/components/icons/WhatsAppIcon';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -21,9 +22,11 @@ interface Props {
   onClose: () => void;
 }
 
-const TIPO_ICONS: Record<string, typeof Phone> = {
+const WhatsAppIconWrapper = (props: any) => <WhatsAppIcon className={props.className || 'h-4 w-4'} />;
+
+const TIPO_ICONS: Record<string, any> = {
   nota: FileText,
-  whatsapp: MessageCircle,
+  whatsapp: WhatsAppIconWrapper,
   email: Mail,
   ligação: Phone,
   reunião: Briefcase,
@@ -143,7 +146,7 @@ export function LeadDetailPanel({ lead, onClose }: Props) {
         {/* Quick Actions */}
         <div className="flex gap-1.5 mt-3">
           <Button variant="outline" size="sm" onClick={openWhatsApp} className="h-8 text-xs gap-1.5 border-emerald-500/30 hover:bg-emerald-500/10 text-emerald-400 flex-1">
-            <MessageCircle className="h-3.5 w-3.5" /> WhatsApp
+            <WhatsAppIcon className="h-3.5 w-3.5" /> WhatsApp
           </Button>
           <Button variant="outline" size="sm" onClick={openEmail} className="h-8 text-xs gap-1.5 border-primary/30 hover:bg-primary/10 text-primary flex-1">
             <Mail className="h-3.5 w-3.5" /> Email
