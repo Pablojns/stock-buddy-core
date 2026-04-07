@@ -6,6 +6,7 @@ import {
   RefreshCw, AlertTriangle, ShoppingBag, Calendar, MapPin,
   Package, TrendingUp, Search,
 } from 'lucide-react';
+import { WhatsAppIcon } from '@/components/icons/WhatsAppIcon';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useClients, type Client } from '@/hooks/useClients';
@@ -195,7 +196,7 @@ export function CrmClients(_props: Props) {
                     {client.telefone && (
                       <a href={`https://wa.me/55${client.telefone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer"
                         className="p-1 rounded hover:bg-emerald-500/10 transition-colors" onClick={e => e.stopPropagation()}>
-                        <Phone className="h-3 w-3 text-emerald-400" />
+                        <WhatsAppIcon className="h-3 w-3 text-emerald-400" />
                       </a>
                     )}
                     {client.email && (

@@ -1,5 +1,6 @@
 import { memo, useRef } from 'react';
 import { Building2, Phone, Mail, User, MapPin, Calendar, Clock } from 'lucide-react';
+import { WhatsAppIcon } from '@/components/icons/WhatsAppIcon';
 import { Badge } from '@/components/ui/badge';
 import type { Lead } from '@/types/crm';
 import { PRIORITY_CONFIG } from '@/types/crm';
@@ -82,7 +83,13 @@ function KanbanCardBase({ lead, onSelect }: Props) {
             )}
           </div>
           <div className="flex gap-1">
-            {lead.telefone && <Phone className="h-2.5 w-2.5 text-muted-foreground" />}
+            {lead.telefone && (
+              <a href={`https://wa.me/55${lead.telefone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer"
+                onClick={e => e.stopPropagation()} onPointerDown={e => e.stopPropagation()}
+                className="hover:text-emerald-400 transition-colors">
+                <WhatsAppIcon className="h-2.5 w-2.5 text-emerald-400" />
+              </a>
+            )}
             {lead.email && <Mail className="h-2.5 w-2.5 text-muted-foreground" />}
           </div>
         </div>
