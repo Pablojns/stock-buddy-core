@@ -10,6 +10,8 @@ import Calculadora from "./pages/Calculadora";
 import Comercial from "./pages/Comercial";
 import Estoque from "./pages/Estoque";
 import Separacao from "./pages/Separacao";
+import Chat from "./pages/Chat";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import { Loader2 } from "lucide-react";
 
@@ -44,6 +46,8 @@ const App = () => (
             <Route path="/comercial" element={<ProtectedRoute><Comercial /></ProtectedRoute>} />
             <Route path="/estoque" element={<ProtectedRoute><Estoque /></ProtectedRoute>} />
             <Route path="/separacao" element={<ProtectedRoute><Separacao /></ProtectedRoute>} />
+            <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
+            <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

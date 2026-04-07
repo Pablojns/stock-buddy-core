@@ -1,10 +1,11 @@
 import { Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, ShoppingBag, Calculator,
-  Package, Warehouse, Zap,
+  Package, Warehouse, MessageCircle, Shield,
 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
+import { useUserRole } from '@/hooks/useUserRole';
 
 const navItems = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -12,6 +13,7 @@ const navItems = [
   { href: '/calculadora', label: 'Calculadora', icon: Calculator },
   { href: '/estoque', label: 'Estoque', icon: Warehouse },
   { href: '/separacao', label: 'Separação', icon: Package },
+  { href: '/chat', label: 'Chat', icon: MessageCircle },
 ];
 
 interface SiteSidebarProps {
