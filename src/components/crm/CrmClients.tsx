@@ -6,6 +6,7 @@ import {
   RefreshCw, AlertTriangle, ShoppingBag, Calendar, MapPin,
   Package, TrendingUp, Search,
 } from 'lucide-react';
+import { WhatsAppIcon } from '@/components/icons/WhatsAppIcon';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useClients, type Client } from '@/hooks/useClients';
