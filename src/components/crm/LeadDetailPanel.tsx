@@ -12,6 +12,7 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useContactHistory, useAddContactNote } from '@/hooks/useLeads';
+import { getWhatsAppUrl } from '@/lib/utils';
 import type { Lead } from '@/types/crm';
 import { KANBAN_COLUMNS, PRIORITY_CONFIG } from '@/types/crm';
 import { format, formatDistanceToNow } from 'date-fns';
@@ -31,121 +32,16 @@ const TIPO_ICONS: Record<string, any> = {
   ligação: Phone,
   reunião: Briefcase,
 };
-
-const TIPO_COLORS: Record<string, string> = {
-  nota: 'bg-muted/40 text-muted-foreground border-border/40',
-  whatsapp: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
-  email: 'bg-primary/15 text-primary border-primary/30',
-  ligação: 'bg-accent/15 text-accent border-accent/30',
-  reunião: 'bg-warning/15 text-warning border-warning/30',
-};
-
-const TIMELINE_STAGES = [
-  { status: 'novo_lead', label: 'Lead Criado' },
-  { status: 'primeiro_contato', label: 'Primeiro Contato' },
-  { status: 'qualificacao', label: 'Qualificação' },
-  { status: 'orcamento_enviado', label: 'Orçamento Enviado' },
-  { status: 'negociacao', label: 'Negociação' },
-  { status: 'fechamento', label: 'Fechamento' },
-  { status: 'ganho', label: 'Ganho' },
-];
-
-function SectionHeader({ icon: Icon, title, children }: { icon: typeof Phone; title: string; children?: React.ReactNode }) {
-  return (
-    <div className="flex items-center justify-between mb-3">
-      <div className="flex items-center gap-2">
-        <div className="h-6 w-6 rounded-lg bg-primary/10 flex items-center justify-center">
-          <Icon className="h-3.5 w-3.5 text-primary" />
-        </div>
-        <h3 className="text-sm font-semibold text-foreground tracking-wide">{title}</h3>
-      </div>
-      {children}
-    </div>
-  );
-}
-
-function InfoRow({ icon: Icon, label, value }: { icon: typeof Phone; label: string; value: string | null | undefined }) {
-  if (!value) return null;
-  return (
-    <div className="flex items-start gap-3 py-1.5">
-      <Icon className="h-3.5 w-3.5 mt-0.5 text-muted-foreground/70 shrink-0" />
-      <div className="min-w-0">
-        <p className="text-[10px] uppercase tracking-wider text-muted-foreground/50 font-medium">{label}</p>
-        <p className="text-sm text-foreground/90 truncate">{value}</p>
-      </div>
-    </div>
-  );
-}
-
-export function LeadDetailPanel({ lead, onClose }: Props) {
-  const { data: history = [] } = useContactHistory(lead.id);
-  const addNote = useAddContactNote();
-  const [nota, setNota] = useState('');
-  const [tipoNota, setTipoNota] = useState('nota');
-  const [showAddNote, setShowAddNote] = useState(false);
-
-  const fmt = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
-  const valor = fmt.format(lead.valor_estimado || 0);
-  const col = KANBAN_COLUMNS.find((c) => c.id === lead.status);
-  const prioConfig = PRIORITY_CONFIG[lead.prioridade || 'normal'];
-
-  // Timeline: determine which stages are completed
-  const stageIndex = TIMELINE_STAGES.findIndex(s => s.status === lead.status);
-  const isLost = lead.status === 'perdido';
-
-  const handleAddNote = () => {
-    if (!nota.trim()) return;
-    addNote.mutate({ lead_id: lead.id, tipo: tipoNota, descricao: nota });
-    setNota('');
-    setShowAddNote(false);
-  };
-
+...
   const openWhatsApp = () => {
-    if (lead.telefone) {
-      const num = lead.telefone.replace(/\D/g, '');
-      window.open(`https://wa.me/55${num}`, '_blank');
+    const whatsappUrl = getWhatsAppUrl(lead.telefone);
+    if (whatsappUrl) {
+      window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
     }
   };
-
-  const openEmail = () => {
-    if (lead.email) window.open(`mailto:${lead.email}`, '_blank');
-  };
-
-  return (
-    <div className="fixed inset-y-0 right-0 w-full max-w-[480px] bg-card/98 backdrop-blur-2xl border-l border-border/30 z-50 shadow-2xl flex flex-col animate-in slide-in-from-right-full duration-300">
-      {/* Header */}
-      <div className="relative px-6 pt-5 pb-4 border-b border-border/20">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
-        <div className="relative flex items-start justify-between">
-          <div className="flex-1 min-w-0 mr-4">
-            <div className="flex items-center gap-2 mb-1">
-              <Badge
-                style={{ backgroundColor: col?.color + '20', color: col?.color, borderColor: col?.color + '40' }}
-                variant="outline"
-                className="text-[10px] font-semibold"
-              >
-                {col?.label}
-              </Badge>
-              <Badge variant="outline" className={`text-[10px] ${prioConfig.bg}`}>
-                {prioConfig.label}
-              </Badge>
-            </div>
-            <h2 className="text-lg font-bold text-foreground truncate">{lead.nome_cliente}</h2>
-            {lead.empresa && (
-              <p className="text-sm text-muted-foreground flex items-center gap-1.5 mt-0.5">
-                <Building2 className="h-3 w-3" /> {lead.empresa}
-              </p>
-            )}
-            <p className="text-2xl font-bold text-accent mt-2">{valor}</p>
-          </div>
-          <Button variant="ghost" size="icon" onClick={onClose} className="rounded-xl shrink-0 -mt-1 -mr-2 hover:bg-destructive/10">
-            <X className="h-5 w-5" />
-          </Button>
-        </div>
-
-        {/* Quick Actions */}
+...
         <div className="flex gap-1.5 mt-3">
-          <Button variant="outline" size="sm" onClick={openWhatsApp} className="h-8 text-xs gap-1.5 border-emerald-500/30 hover:bg-emerald-500/10 text-emerald-400 flex-1">
+          <Button variant="outline" size="sm" onClick={openWhatsApp} disabled={!getWhatsAppUrl(lead.telefone)} className="h-8 text-xs gap-1.5 border-emerald-500/30 hover:bg-emerald-500/10 text-emerald-400 flex-1 disabled:opacity-50">
             <WhatsAppIcon className="h-3.5 w-3.5" /> WhatsApp
           </Button>
           <Button variant="outline" size="sm" onClick={openEmail} className="h-8 text-xs gap-1.5 border-primary/30 hover:bg-primary/10 text-primary flex-1">
