@@ -1,74 +1,89 @@
 import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
-import { GlassCard } from '@/components/ui/glass-card';
 import {
-  Building2, Mail, Phone, DollarSign, User, Crown,
-  RefreshCw, AlertTriangle, ShoppingBag, Calendar, MapPin,
-  Package, TrendingUp, Search,
+  Building2,
+  Mail,
+  Crown,
+  RefreshCw,
+  AlertTriangle,
+  ShoppingBag,
+  Calendar,
+  MapPin,
+  Package,
+  Search,
+  User,
+  Loader2,
+  type LucideIcon,
 } from 'lucide-react';
-import { WhatsAppIcon } from '@/components/icons/WhatsAppIcon';
+import { GlassCard } from '@/components/ui/glass-card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { WhatsAppIcon } from '@/components/icons/WhatsAppIcon';
 import { useClients, type Client } from '@/hooks/useClients';
-import { Loader2 } from 'lucide-react';
+import { getWhatsAppUrl } from '@/lib/utils';
 
-const fmt = (v: number) =>
-  v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+const fmt = (value: number) => value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-const CLASSIFICACAO_CONFIG: Record<string, { label: string; icon: typeof Crown; classes: string }> = {
+const CLASSIFICACAO_CONFIG: Record<string, { label: string; icon: LucideIcon; classes: string }> = {
   vip: { label: 'VIP', icon: Crown, classes: 'border-amber-400/40 bg-amber-500/15 text-amber-400' },
   recorrente: { label: 'Recorrente', icon: RefreshCw, classes: 'border-emerald-400/40 bg-emerald-500/15 text-emerald-400' },
-  inativo: { label: 'Inativo', icon: AlertTriangle, classes: 'border-red-400/40 bg-red-500/15 text-red-400' },
+  inativo: { label: 'Inativo', icon: AlertTriangle, classes: 'border-destructive/40 bg-destructive/15 text-destructive' },
   normal: { label: 'Normal', icon: User, classes: 'border-border/40 bg-muted/30 text-muted-foreground' },
 };
 
-function getAutoClassificacao(client: Client): string {
+function getAutoClassificacao(client: Client) {
   if (client.classificacao && client.classificacao !== 'normal') return client.classificacao;
   if (client.total_comprado >= 50000 || client.total_pedidos >= 10) return 'vip';
   if (client.total_pedidos >= 3) return 'recorrente';
+
   if (client.ultimo_pedido) {
     const diff = Date.now() - new Date(client.ultimo_pedido).getTime();
     if (diff > 90 * 24 * 60 * 60 * 1000) return 'inativo';
   }
+
   return 'normal';
 }
 
-interface Props {
-  leads?: any[];
-  onSelect?: (lead: any) => void;
-}
-
-export function CrmClients(_props: Props) {
+export function CrmClients() {
   const { clients, isLoading } = useClients();
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<string | null>(null);
 
-  const enriched = useMemo(() =>
-    clients.map(c => ({ ...c, autoClass: getAutoClassificacao(c) })),
+  const enriched = useMemo(
+    () => clients.map((client) => ({ ...client, autoClass: getAutoClassificacao(client) })),
     [clients]
   );
 
   const filtered = useMemo(() => {
     let list = enriched;
-    if (filter) list = list.filter(c => c.autoClass === filter);
+
+    if (filter) {
+      list = list.filter((client) => client.autoClass === filter);
+    }
+
     if (search.trim()) {
-      const q = search.toLowerCase();
-      list = list.filter(c =>
-        c.nome_cliente.toLowerCase().includes(q) ||
-        c.empresa?.toLowerCase().includes(q) ||
-        c.responsavel?.toLowerCase().includes(q)
+      const query = search.toLowerCase();
+      list = list.filter(
+        (client) =>
+          client.nome_cliente.toLowerCase().includes(query) ||
+          client.empresa?.toLowerCase().includes(query) ||
+          client.responsavel?.toLowerCase().includes(query)
       );
     }
+
     return list;
   }, [enriched, filter, search]);
 
-  const counts = useMemo(() => ({
-    vip: enriched.filter(c => c.autoClass === 'vip').length,
-    recorrente: enriched.filter(c => c.autoClass === 'recorrente').length,
-    inativo: enriched.filter(c => c.autoClass === 'inativo').length,
-    total: enriched.length,
-    totalValue: enriched.reduce((s, c) => s + c.total_comprado, 0),
-  }), [enriched]);
+  const counts = useMemo(
+    () => ({
+      vip: enriched.filter((client) => client.autoClass === 'vip').length,
+      recorrente: enriched.filter((client) => client.autoClass === 'recorrente').length,
+      inativo: enriched.filter((client) => client.autoClass === 'inativo').length,
+      total: enriched.length,
+      totalValue: enriched.reduce((sum, client) => sum + client.total_comprado, 0),
+    }),
+    [enriched]
+  );
 
   if (isLoading) {
     return (
@@ -80,41 +95,60 @@ export function CrmClients(_props: Props) {
 
   return (
     <div className="space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3">
         <div>
           <h2 className="text-base font-bold text-foreground">Clientes</h2>
-          <p className="text-xs text-muted-foreground mt-0.5">{counts.total} clientes • {fmt(counts.totalValue)} em vendas</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            {counts.total} clientes • {fmt(counts.totalValue)} em vendas
+          </p>
         </div>
+
         <div className="relative">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-          <Input placeholder="Buscar..." value={search} onChange={e => setSearch(e.target.value)} className="pl-8 h-8 w-40 text-xs bg-muted/30 border-border/50" />
+          <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Buscar..."
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            className="h-8 w-40 border-border/50 bg-muted/30 pl-8 text-xs"
+          />
         </div>
       </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
+      <div className="grid grid-cols-2 gap-2.5 md:grid-cols-4">
         {[
-          { label: 'Total', value: counts.total, icon: ShoppingBag, onClick: () => setFilter(null), active: !filter },
-          { label: 'VIP', value: counts.vip, icon: Crown, onClick: () => setFilter(filter === 'vip' ? null : 'vip'), active: filter === 'vip' },
-          { label: 'Recorrentes', value: counts.recorrente, icon: RefreshCw, onClick: () => setFilter(filter === 'recorrente' ? null : 'recorrente'), active: filter === 'recorrente' },
-          { label: 'Inativos', value: counts.inativo, icon: AlertTriangle, onClick: () => setFilter(filter === 'inativo' ? null : 'inativo'), active: filter === 'inativo' },
-        ].map((kpi) => {
-          const Icon = kpi.icon;
+          { label: 'Total', value: counts.total, icon: ShoppingBag, active: !filter, onClick: () => setFilter(null) },
+          { label: 'VIP', value: counts.vip, icon: Crown, active: filter === 'vip', onClick: () => setFilter(filter === 'vip' ? null : 'vip') },
+          {
+            label: 'Recorrentes',
+            value: counts.recorrente,
+            icon: RefreshCw,
+            active: filter === 'recorrente',
+            onClick: () => setFilter(filter === 'recorrente' ? null : 'recorrente'),
+          },
+          {
+            label: 'Inativos',
+            value: counts.inativo,
+            icon: AlertTriangle,
+            active: filter === 'inativo',
+            onClick: () => setFilter(filter === 'inativo' ? null : 'inativo'),
+          },
+        ].map((item) => {
+          const Icon = item.icon;
+
           return (
             <GlassCard
-              key={kpi.label}
+              key={item.label}
               hover
-              className={`!p-3 cursor-pointer transition-all ${kpi.active ? 'ring-1 ring-primary/40' : ''}`}
-              onClick={kpi.onClick}
+              onClick={item.onClick}
+              className={`cursor-pointer !p-3 transition-all ${item.active ? 'ring-1 ring-primary/40' : ''}`}
             >
               <div className="flex items-center gap-2">
-                <div className="p-1.5 rounded-lg bg-primary/10">
-                  <Icon className="h-3.5 w-3.5 text-primary" />
+                <div className="rounded-lg bg-primary/10 p-1.5 text-primary">
+                  <Icon className="h-3.5 w-3.5" />
                 </div>
                 <div>
-                  <p className="text-lg font-bold text-foreground">{kpi.value}</p>
-                  <p className="text-[10px] text-muted-foreground">{kpi.label}</p>
+                  <p className="text-lg font-bold text-foreground">{item.value}</p>
+                  <p className="text-[10px] text-muted-foreground">{item.label}</p>
                 </div>
               </div>
             </GlassCard>
@@ -122,48 +156,51 @@ export function CrmClients(_props: Props) {
         })}
       </div>
 
-      {/* Client Grid */}
       {filtered.length === 0 ? (
-        <GlassCard className="text-center py-12">
-          <ShoppingBag className="h-8 w-8 mx-auto text-muted-foreground/40 mb-2" />
+        <GlassCard className="py-12 text-center">
+          <ShoppingBag className="mx-auto mb-2 h-8 w-8 text-muted-foreground/40" />
           <p className="text-sm text-muted-foreground">Nenhum cliente encontrado</p>
-          <p className="text-xs text-muted-foreground mt-1">Leads com status "Ganho" se tornam clientes automaticamente</p>
+          <p className="mt-1 text-xs text-muted-foreground">Leads com status “Ganho” viram clientes automaticamente</p>
         </GlassCard>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
-          {filtered.map((client, i) => {
-            const cls = CLASSIFICACAO_CONFIG[client.autoClass] || CLASSIFICACAO_CONFIG.normal;
-            const ClsIcon = cls.icon;
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {filtered.map((client, index) => {
+            const classification = CLASSIFICACAO_CONFIG[client.autoClass] || CLASSIFICACAO_CONFIG.normal;
+            const ClassificationIcon = classification.icon;
+            const whatsappUrl = getWhatsAppUrl(client.telefone);
+
             return (
               <motion.div
                 key={client.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.025 }}
+                transition={{ delay: index * 0.025 }}
               >
-                <GlassCard hover className="!p-4 cursor-pointer">
-                  {/* Header row */}
-                  <div className="flex items-start justify-between mb-2.5">
+                <GlassCard hover className="!p-4">
+                  <div className="mb-2.5 flex items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
-                      <h3 className="text-sm font-semibold text-foreground truncate">{client.nome_cliente}</h3>
+                      <h3 className="truncate text-sm font-semibold text-foreground">{client.nome_cliente}</h3>
                       {client.empresa && (
-                        <div className="flex items-center gap-1 mt-0.5 text-[10px] text-muted-foreground">
-                          <Building2 className="h-2.5 w-2.5 shrink-0" /> {client.empresa}
+                        <div className="mt-0.5 flex items-center gap-1 text-[10px] text-muted-foreground">
+                          <Building2 className="h-2.5 w-2.5 shrink-0" />
+                          {client.empresa}
                         </div>
                       )}
                     </div>
-                    <Badge variant="outline" className={`text-[9px] shrink-0 ${cls.classes}`}>
-                      <ClsIcon className="h-2.5 w-2.5 mr-0.5" /> {cls.label}
+
+                    <Badge variant="outline" className={`shrink-0 text-[9px] ${classification.classes}`}>
+                      <ClassificationIcon className="mr-0.5 h-2.5 w-2.5" />
+                      {classification.label}
                     </Badge>
                   </div>
 
-                  {/* Value & Orders */}
-                  <div className="flex items-baseline gap-3 mb-3">
+                  <div className="mb-3 flex items-baseline gap-3">
                     <p className="text-lg font-bold text-accent">{fmt(client.total_comprado)}</p>
-                    <span className="text-[10px] text-muted-foreground">{client.total_pedidos} pedido{client.total_pedidos !== 1 ? 's' : ''}</span>
+                    <span className="text-[10px] text-muted-foreground">
+                      {client.total_pedidos} pedido{client.total_pedidos !== 1 ? 's' : ''}
+                    </span>
                   </div>
 
-                  {/* Info rows */}
                   <div className="space-y-1 text-[10px] text-muted-foreground">
                     {client.produto_recorrente && (
                       <div className="flex items-center gap-1.5">
@@ -191,20 +228,31 @@ export function CrmClients(_props: Props) {
                     )}
                   </div>
 
-                  {/* Contact icons */}
-                  <div className="flex items-center gap-2 mt-2.5 pt-2 border-t border-border/20">
-                    {client.telefone && (
-                      <a href={`https://wa.me/55${client.telefone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer"
-                        className="p-1 rounded hover:bg-emerald-500/10 transition-colors" onClick={e => e.stopPropagation()}>
-                        <WhatsAppIcon className="h-3 w-3 text-emerald-400" />
+                  <div className="mt-2.5 flex items-center gap-2 border-t border-border/20 pt-2">
+                    {whatsappUrl && (
+                      <a
+                        href={whatsappUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="rounded p-1 text-emerald-400 transition-colors hover:bg-emerald-500/10"
+                        onClick={(event) => event.stopPropagation()}
+                        aria-label={`Abrir WhatsApp de ${client.nome_cliente}`}
+                      >
+                        <WhatsAppIcon className="h-3 w-3" />
                       </a>
                     )}
+
                     {client.email && (
-                      <a href={`mailto:${client.email}`}
-                        className="p-1 rounded hover:bg-primary/10 transition-colors" onClick={e => e.stopPropagation()}>
-                        <Mail className="h-3 w-3 text-primary" />
+                      <a
+                        href={`mailto:${client.email}`}
+                        className="rounded p-1 text-primary transition-colors hover:bg-primary/10"
+                        onClick={(event) => event.stopPropagation()}
+                        aria-label={`Enviar email para ${client.nome_cliente}`}
+                      >
+                        <Mail className="h-3 w-3" />
                       </a>
                     )}
+
                     <div className="flex-1" />
                     <span className="text-[9px] text-muted-foreground/60">{client.frequencia_compra}</span>
                   </div>
