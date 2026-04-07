@@ -16,9 +16,8 @@ export function getWhatsAppPhone(phone?: string | null) {
 
 export function getWhatsAppUrl(phone?: string | null, message?: string) {
   const whatsappPhone = getWhatsAppPhone(phone);
-
   if (!whatsappPhone) return null;
 
-  const baseUrl = `https://api.whatsapp.com/send?phone=${whatsappPhone}`;
-  return message ? `${baseUrl}&text=${encodeURIComponent(message)}` : baseUrl;
+  const baseUrl = `https://wa.me/${whatsappPhone}`;
+  return message ? `${baseUrl}?text=${encodeURIComponent(message)}` : baseUrl;
 }
