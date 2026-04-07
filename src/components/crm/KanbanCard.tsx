@@ -91,7 +91,18 @@ function KanbanCardBase({ lead, onSelect }: Props) {
                 <WhatsAppIcon className="h-2.5 w-2.5 text-emerald-400" />
               </a>
             )}
-            {lead.email && <Mail className="h-2.5 w-2.5 text-muted-foreground" />}
+            {lead.email && (
+              <a
+                href={`https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(lead.email)}&su=${encodeURIComponent(`Contato - ${lead.nome_cliente}`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={e => e.stopPropagation()}
+                onPointerDown={e => e.stopPropagation()}
+                className="hover:text-blue-400 transition-colors"
+              >
+                <Mail className="h-2.5 w-2.5 text-blue-400" />
+              </a>
+            )}
           </div>
         </div>
 
