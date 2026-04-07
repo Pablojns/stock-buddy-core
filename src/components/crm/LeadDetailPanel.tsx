@@ -131,7 +131,7 @@ export function LeadDetailPanel({ lead, onClose }: Props) {
 
   const openEmail = () => {
     if (lead.email) {
-      window.open(`mailto:${lead.email}`, '_blank', 'noopener,noreferrer');
+      window.open(`https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(lead.email)}&su=${encodeURIComponent(`Contato - ${lead.nome_cliente}`)}`, '_blank', 'noopener,noreferrer');
     }
   };
 
