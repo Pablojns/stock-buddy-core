@@ -34,7 +34,7 @@ export function OrderCreateDialog({ open, onOpenChange }: Props) {
 
   useEffect(() => {
     if (open) {
-      supabase.from('products').select('id, name, code, sale_price').then(({ data }) => {
+      supabase.from('products').select('id, name, code, sale_price, current_quantity, reserved_quantity').then(({ data }) => {
         if (data) setProducts(data);
       });
     }
@@ -103,7 +103,14 @@ export function OrderCreateDialog({ open, onOpenChange }: Props) {
                   <Label className="text-xs">Produto</Label>
                   <select value={item.product_id} onChange={e => updateItem(idx, 'product_id', e.target.value)} className="w-full h-9 rounded-md bg-secondary/50 border border-border/50 px-2 text-sm text-foreground">
                     <option value="">Manual</option>
-                    {products.map(p => <option key={p.id} value={p.id}>{p.code} - {p.name}</option>)}
+                    {products.map(p => {
+                      const available = (p.current_quantity || 0) - (p.reserved_quantity || 0);
+                      return (
+                        <option key={p.id} value={p.id} disabled={available <= 0}>
+                          {p.code} - {p.name} ({available} disp.)
+                        </option>
+                      );
+                    })}
                   </select>
                 </div>
                 {!item.product_id && (

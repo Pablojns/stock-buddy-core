@@ -10,8 +10,11 @@ interface LowStockAlertsProps {
 }
 
 export function LowStockAlerts({ products, onRestock }: LowStockAlertsProps) {
-  const outOfStock = products.filter(p => p.current_quantity <= 0);
-  const lowStock = products.filter(p => p.current_quantity > 0 && p.current_quantity <= p.minimum_quantity);
+  const outOfStock = products.filter(p => (p.current_quantity - p.reserved_quantity) <= 0);
+  const lowStock = products.filter(p => {
+    const available = p.current_quantity - p.reserved_quantity;
+    return available > 0 && available <= p.minimum_quantity;
+  });
   const restockSoon = products.filter(p => {
     if (!p.restock_date) return false;
     const diff = (new Date(p.restock_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24);
@@ -33,7 +36,7 @@ export function LowStockAlerts({ products, onRestock }: LowStockAlertsProps) {
         <div className="min-w-0">
           <p className="font-medium truncate text-sm">{p.name}</p>
           <p className="text-xs text-muted-foreground">
-            {label} · Atual: <span className="font-semibold">{p.current_quantity}</span> · Mín: {p.minimum_quantity}
+            {label} · Disponível: <span className="font-semibold">{p.current_quantity - p.reserved_quantity}</span> · Total: {p.current_quantity} · Mín: {p.minimum_quantity}
           </p>
         </div>
       </div>
