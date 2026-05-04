@@ -84,9 +84,22 @@ export function useOrders() {
         items.map(i => ({ ...i, order_id: data.id }))
       );
       if (itemsError) { toast({ title: 'Erro nos itens', description: itemsError.message, variant: 'destructive' }); return; }
+
+      // Reserve stock for each item that has a product_id
+      for (const item of items) {
+        if (item.product_id) {
+          const { data: product } = await supabase.from('products').select('reserved_quantity').eq('id', item.product_id).single();
+          if (product) {
+            const currentReserved = product.reserved_quantity || 0;
+            await supabase.from('products')
+              .update({ reserved_quantity: currentReserved + item.quantity })
+              .eq('id', item.product_id);
+          }
+        }
+      }
     }
 
-    toast({ title: 'Pedido criado com sucesso!' });
+    toast({ title: 'Pedido criado com sucesso e itens reservados!' });
     fetchOrders();
   };
 
@@ -103,20 +116,28 @@ export function useOrders() {
     const order = orders.find(o => o.id === orderId);
     if (!order) return;
 
-    // Deduct stock for each item
+    // Deduct stock and release reservation for each item
     for (const item of order.items) {
       if (item.product_id) {
-        const { data: product } = await supabase.from('products').select('current_quantity').eq('id', item.product_id).single();
+        const { data: product } = await supabase.from('products').select('current_quantity, reserved_quantity').eq('id', item.product_id).single();
         if (product) {
-          const prev = product.current_quantity;
-          const newQty = prev - item.quantity;
-          await supabase.from('products').update({ current_quantity: newQty, last_movement: new Date().toISOString() }).eq('id', item.product_id);
+          const prevQty = product.current_quantity;
+          const currentReserved = product.reserved_quantity || 0;
+          const newQty = prevQty - item.quantity;
+          const newReserved = Math.max(0, currentReserved - item.quantity);
+          
+          await supabase.from('products').update({ 
+            current_quantity: newQty, 
+            reserved_quantity: newReserved,
+            last_movement: new Date().toISOString() 
+          }).eq('id', item.product_id);
+          
           await supabase.from('stock_movements').insert({
             product_id: item.product_id,
             product_name: item.product_name,
             quantity: item.quantity,
             type: 'exit',
-            previous_quantity: prev,
+            previous_quantity: prevQty,
             new_quantity: newQty,
             notes: `Saída automática - Pedido ${order.order_number}`,
             user_id: order.user_id,
@@ -132,7 +153,7 @@ export function useOrders() {
     }).eq('id', orderId);
 
     if (error) { toast({ title: 'Erro', description: error.message, variant: 'destructive' }); return; }
-    toast({ title: 'Pedido concluído e estoque atualizado!' });
+    toast({ title: 'Pedido concluído, estoque atualizado e reserva liberada!' });
     fetchOrders();
   };
 
