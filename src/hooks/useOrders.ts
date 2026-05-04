@@ -116,6 +116,10 @@ export function useOrders() {
     const order = orders.find(o => o.id === orderId);
     if (!order) return;
 
+    // The stock deduction and reservation release is already handled in the next section
+    // but we can ensure it is robust here.
+
+
     // Deduct stock and release reservation for each item
     for (const item of order.items) {
       if (item.product_id) {
