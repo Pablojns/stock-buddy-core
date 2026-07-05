@@ -59,7 +59,9 @@ export default function Dashboard() {
         <StatCard label="Saldo total" value={fmt(stats.balance)} icon={<Wallet className="w-4 h-4" />} tone="default" />
         <StatCard label="Receitas do mês" value={fmt(stats.income)} icon={<TrendingUp className="w-4 h-4" />} tone="success" />
         <StatCard label="Despesas do mês" value={fmt(stats.expense)} icon={<TrendingDown className="w-4 h-4" />} tone="destructive" />
-        <StatCard label="Cofre de Oportunidades" value={fmt(Number(vault?.balance ?? 0))} icon={<PiggyBank className="w-4 h-4" />} tone="success" />
+        <StatCard label="Cofre de Oportunidades" value={fmt(Number(vault?.balance ?? 0))} icon={<PiggyBank className="w-4 h-4" />} tone="success" onClick={() => setVaultOpen(true)} />
+      </div>
+      <VaultDialog open={vaultOpen} onOpenChange={setVaultOpen} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
