@@ -122,10 +122,13 @@ export default function Dashboard() {
   );
 }
 
-function StatCard({ label, value, icon, tone }: { label: string; value: string; icon: React.ReactNode; tone: 'default' | 'success' | 'destructive' }) {
+function StatCard({ label, value, icon, tone, onClick }: { label: string; value: string; icon: React.ReactNode; tone: 'default' | 'success' | 'destructive'; onClick?: () => void }) {
   const toneClass = tone === 'success' ? 'text-primary' : tone === 'destructive' ? 'text-destructive' : 'text-foreground';
   return (
-    <Card className="p-5">
+    <Card
+      onClick={onClick}
+      className={cn('p-5 transition-all', onClick && 'cursor-pointer hover:border-primary/50 hover:shadow-lg hover:-translate-y-0.5')}
+    >
       <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
         {icon} {label}
       </div>
