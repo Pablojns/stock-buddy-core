@@ -71,10 +71,10 @@ function BucketColumn({ bucket, label, tasks }: { bucket: Task['bucket']; label:
   };
 
   return (
-    <Card className="p-4">
+    <Card className="p-4 transition-colors hover:border-primary/30">
       <div className="flex justify-between items-center mb-3">
         <h3 className="text-sm font-semibold">{label}</h3>
-        <span className="text-xs text-muted-foreground">{tasks.length}</span>
+        <Badge variant="secondary" className="rounded-full">{tasks.length}</Badge>
       </div>
       <Input
         placeholder="Nova tarefa..."
@@ -85,7 +85,10 @@ function BucketColumn({ bucket, label, tasks }: { bucket: Task['bucket']; label:
       />
       <ul className="space-y-1.5">
         {tasks.map((t) => (
-          <li key={t.id} className="group flex items-center gap-2 py-1.5 px-2 rounded-md hover:bg-secondary/50">
+          <li
+            key={t.id}
+            className="group flex items-center gap-2 py-2 px-2.5 rounded-md border border-transparent transition-all duration-200 hover:bg-secondary/60 hover:border-border hover:-translate-y-0.5 hover:shadow-sm"
+          >
             <Checkbox checked={t.completed} onCheckedChange={(v) => toggle.mutate({ id: t.id, completed: !!v })} />
             <span className={cn('text-sm flex-1', t.completed && 'line-through text-muted-foreground')}>{t.title}</span>
             <Button size="icon" variant="ghost" className="opacity-0 group-hover:opacity-100 h-7 w-7" onClick={() => del.mutate(t.id)}>
