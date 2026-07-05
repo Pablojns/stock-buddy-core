@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { PageHeader } from '@/components/PageHeader';
 import { TransactionDialog } from '@/components/TransactionDialog';
+import { CreditCardsSection } from '@/components/CreditCardsSection';
 import { useTransactions, useDeleteTransaction } from '@/hooks/useTransactions';
 import { Plus, Trash2 } from 'lucide-react';
 import {
@@ -44,6 +45,8 @@ export default function Financeiro() {
         description="Acompanhe receitas, despesas e evolução"
         action={<TransactionDialog trigger={<Button><Plus className="w-4 h-4 mr-1" /> Nova transação</Button>} />}
       />
+
+      <CreditCardsSection />
 
       <Card className="p-5 mb-6">
         <h2 className="text-sm font-semibold mb-4">Últimas 6 semanas</h2>
