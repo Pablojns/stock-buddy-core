@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useCreateTransaction } from '@/hooks/useTransactions';
+import { useCreditCards } from '@/hooks/useCreditCards';
 import { ReactNode } from 'react';
 
 const CATEGORIES = ['Alimentação', 'Transporte', 'Moradia', 'Lazer', 'Saúde', 'Educação', 'Faturamento', 'Investimento', 'Outros'];
@@ -16,14 +17,29 @@ export function TransactionDialog({ trigger }: { trigger: ReactNode }) {
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState(CATEGORIES[0]);
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
+  const [paymentMethod, setPaymentMethod] = useState<'cash' | 'credit'>('cash');
+  const [cardId, setCardId] = useState<string>('');
+  const [installments, setInstallments] = useState('1');
   const create = useCreateTransaction();
+  const { data: cards = [] } = useCreditCards();
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await create.mutateAsync({ type, amount: parseFloat(amount), description, category, date });
+    await create.mutateAsync({
+      type,
+      amount: parseFloat(amount),
+      description,
+      category,
+      date,
+      payment_method: type === 'expense' ? paymentMethod : 'cash',
+      credit_card_id: type === 'expense' && paymentMethod === 'credit' && cardId ? cardId : null,
+      installments_count: type === 'expense' && paymentMethod === 'credit' ? parseInt(installments, 10) : 1,
+    });
     setOpen(false);
-    setAmount(''); setDescription('');
+    setAmount(''); setDescription(''); setInstallments('1'); setPaymentMethod('cash'); setCardId('');
   };
+
+  const showCredit = type === 'expense' && paymentMethod === 'credit';
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -56,6 +72,35 @@ export function TransactionDialog({ trigger }: { trigger: ReactNode }) {
             <Label>Data</Label>
             <Input type="date" required value={date} onChange={(e) => setDate(e.target.value)} />
           </div>
+
+          {type === 'expense' && (
+            <div className="space-y-2">
+              <Label>Forma de pagamento</Label>
+              <div className="grid grid-cols-2 gap-2">
+                <Button type="button" variant={paymentMethod === 'cash' ? 'default' : 'outline'} onClick={() => setPaymentMethod('cash')}>Dinheiro/Pix</Button>
+                <Button type="button" variant={paymentMethod === 'credit' ? 'default' : 'outline'} onClick={() => setPaymentMethod('credit')}>Cartão de crédito</Button>
+              </div>
+            </div>
+          )}
+
+          {showCredit && (
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label>Cartão</Label>
+                <Select value={cardId} onValueChange={setCardId}>
+                  <SelectTrigger><SelectValue placeholder={cards.length ? 'Escolher' : 'Cadastre um cartão'} /></SelectTrigger>
+                  <SelectContent>
+                    {cards.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Parcelas</Label>
+                <Input type="number" min="1" max="60" value={installments} onChange={(e) => setInstallments(e.target.value)} />
+              </div>
+            </div>
+          )}
+
           <Button type="submit" className="w-full" disabled={create.isPending}>Salvar</Button>
         </form>
       </DialogContent>

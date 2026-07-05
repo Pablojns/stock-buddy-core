@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      credit_cards: {
+        Row: {
+          brand: string | null
+          closing_day: number
+          color: string | null
+          created_at: string
+          due_day: number
+          id: string
+          limit_amount: number
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          brand?: string | null
+          closing_day?: number
+          color?: string | null
+          created_at?: string
+          due_day?: number
+          id?: string
+          limit_amount?: number
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          brand?: string | null
+          closing_day?: number
+          color?: string | null
+          created_at?: string
+          due_day?: number
+          id?: string
+          limit_amount?: number
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       goals: {
         Row: {
           created_at: string
@@ -115,6 +154,63 @@ export type Database = {
         }
         Relationships: []
       }
+      installments: {
+        Row: {
+          amount: number
+          created_at: string
+          credit_card_id: string | null
+          due_date: string
+          id: string
+          installment_number: number
+          paid: boolean
+          total_installments: number
+          transaction_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          credit_card_id?: string | null
+          due_date: string
+          id?: string
+          installment_number: number
+          paid?: boolean
+          total_installments: number
+          transaction_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          credit_card_id?: string | null
+          due_date?: string
+          id?: string
+          installment_number?: number
+          paid?: boolean
+          total_installments?: number
+          transaction_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "installments_credit_card_id_fkey"
+            columns: ["credit_card_id"]
+            isOneToOne: false
+            referencedRelation: "credit_cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "installments_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notes: {
         Row: {
           content: string | null
@@ -207,9 +303,12 @@ export type Database = {
           amount: number
           category: string
           created_at: string
+          credit_card_id: string | null
           date: string
           description: string
           id: string
+          installments_count: number
+          payment_method: string
           type: string
           updated_at: string
           user_id: string
@@ -218,9 +317,12 @@ export type Database = {
           amount: number
           category: string
           created_at?: string
+          credit_card_id?: string | null
           date?: string
           description: string
           id?: string
+          installments_count?: number
+          payment_method?: string
           type: string
           updated_at?: string
           user_id: string
@@ -229,14 +331,25 @@ export type Database = {
           amount?: number
           category?: string
           created_at?: string
+          credit_card_id?: string | null
           date?: string
           description?: string
           id?: string
+          installments_count?: number
+          payment_method?: string
           type?: string
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "transactions_credit_card_id_fkey"
+            columns: ["credit_card_id"]
+            isOneToOne: false
+            referencedRelation: "credit_cards"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {

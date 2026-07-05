@@ -5,6 +5,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/PageHeader';
 import { TransactionDialog } from '@/components/TransactionDialog';
+import { InsightsCard } from '@/components/InsightsCard';
 import { useTransactions } from '@/hooks/useTransactions';
 import { useTasks, useToggleTask } from '@/hooks/useTasks';
 import { useGoals } from '@/hooks/useGoals';
@@ -45,6 +46,8 @@ export default function Dashboard() {
           />
         }
       />
+
+      <InsightsCard />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <StatCard label="Saldo total" value={fmt(stats.balance)} icon={<Wallet className="w-4 h-4" />} tone="default" />
