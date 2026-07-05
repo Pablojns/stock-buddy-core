@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -6,12 +6,14 @@ import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/PageHeader';
 import { TransactionDialog } from '@/components/TransactionDialog';
 import { InsightsCard } from '@/components/InsightsCard';
+import { VaultDialog } from '@/components/VaultDialog';
 import { useTransactions } from '@/hooks/useTransactions';
 import { useTasks, useToggleTask } from '@/hooks/useTasks';
 import { useWishlist } from '@/hooks/useWishlist';
 import { BrainDump } from '@/components/BrainDump';
 import { useVault } from '@/hooks/useVault';
 import { TrendingUp, TrendingDown, Wallet, Plus, Sparkles, PiggyBank } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const fmt = (n: number) => n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
