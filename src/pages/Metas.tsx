@@ -12,7 +12,8 @@ import { PageHeader } from '@/components/PageHeader';
 import {
   useWishlist, useCreateWishlistItem, useUpdateWishlistItem, useGiveUpWishlistItem,
 } from '@/hooks/useWishlist';
-import { useTasks } from '@/hooks/useTasks';
+import { useTasks, Task } from '@/hooks/useTasks';
+import type { WishlistItem } from '@/hooks/useWishlist';
 import { Plus, Sparkles, X, Wallet, Link2 } from 'lucide-react';
 
 const fmt = (n: number) => n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
