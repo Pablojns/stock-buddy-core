@@ -5,11 +5,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PageHeader } from '@/components/PageHeader';
 import {
-  useWishlist, useCreateWishlistItem, useUpdateWishlistItem, useDeleteWishlistItem,
+  useWishlist, useCreateWishlistItem, useUpdateWishlistItem, useGiveUpWishlistItem,
 } from '@/hooks/useWishlist';
-import { Plus, Sparkles, X, Wallet } from 'lucide-react';
+import { useTasks } from '@/hooks/useTasks';
+import { Plus, Sparkles, X, Wallet, Link2 } from 'lucide-react';
 
 const fmt = (n: number) => n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
@@ -19,14 +21,22 @@ const SUGGESTIONS = [
   { title: 'Viagem Fernando de Noronha', total_value: 8000 },
 ];
 
+const NONE = '__none__';
+
 export default function Metas() {
   const { data: items = [] } = useWishlist();
+  const { data: tasks = [] } = useTasks();
   const create = useCreateWishlistItem();
   const update = useUpdateWishlistItem();
-  const del = useDeleteWishlistItem();
+  const giveUp = useGiveUpWishlistItem();
+
+  const activeTasks = tasks.filter((t) => !t.completed);
 
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ title: '', total_value: '', saved_value: '' });
+  const [form, setForm] = useState({
+    title: '', total_value: '', saved_value: '',
+    reward_task_id: NONE, reward_type: 'fixed' as 'fixed' | 'percent', reward_value: '',
+  });
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,9 +44,12 @@ export default function Metas() {
       title: form.title,
       total_value: parseFloat(form.total_value),
       saved_value: form.saved_value ? parseFloat(form.saved_value) : 0,
+      reward_task_id: form.reward_task_id === NONE ? null : form.reward_task_id,
+      reward_type: form.reward_type,
+      reward_value: form.reward_value ? parseFloat(form.reward_value) : 0,
     });
     setOpen(false);
-    setForm({ title: '', total_value: '', saved_value: '' });
+    setForm({ title: '', total_value: '', saved_value: '', reward_task_id: NONE, reward_type: 'fixed', reward_value: '' });
   };
 
   return (
@@ -55,6 +68,40 @@ export default function Metas() {
                   <div className="space-y-2"><Label>Valor total (R$)</Label><Input required type="number" step="0.01" min="0" value={form.total_value} onChange={(e) => setForm({ ...form, total_value: e.target.value })} /></div>
                   <div className="space-y-2"><Label>Já guardado</Label><Input type="number" step="0.01" min="0" value={form.saved_value} onChange={(e) => setForm({ ...form, saved_value: e.target.value })} /></div>
                 </div>
+
+                <div className="pt-2 border-t space-y-3">
+                  <Label className="flex items-center gap-1.5 text-xs uppercase text-muted-foreground">
+                    <Link2 className="w-3 h-3" /> Recompensa por tarefa (opcional)
+                  </Label>
+                  <Select value={form.reward_task_id} onValueChange={(v) => setForm({ ...form, reward_task_id: v })}>
+                    <SelectTrigger><SelectValue placeholder="Vincular a uma tarefa" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={NONE}>Nenhuma</SelectItem>
+                      {activeTasks.map((t) => (
+                        <SelectItem key={t.id} value={t.id}>{t.title}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {form.reward_task_id !== NONE && (
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-2">
+                        <Label>Tipo</Label>
+                        <Select value={form.reward_type} onValueChange={(v: 'fixed' | 'percent') => setForm({ ...form, reward_type: v })}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="fixed">Valor fixo (R$)</SelectItem>
+                            <SelectItem value="percent">% do total</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>{form.reward_type === 'fixed' ? 'Valor (R$)' : '% do total'}</Label>
+                        <Input type="number" step="0.01" min="0" value={form.reward_value} onChange={(e) => setForm({ ...form, reward_value: e.target.value })} />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 <Button type="submit" className="w-full" disabled={create.isPending}>Adicionar à wishlist</Button>
               </form>
             </DialogContent>
@@ -90,10 +137,11 @@ export default function Metas() {
             const remaining = Math.max(0, total - saved);
             const pct = total > 0 ? Math.min(100, Math.round((saved / total) * 100)) : 0;
             const complete = pct >= 100;
+            const linkedTask = tasks.find((t) => t.id === it.reward_task_id);
             return (
               <Card key={it.id} className="p-5 flex flex-col gap-3 relative">
                 <button
-                  onClick={() => del.mutate(it.id)}
+                  onClick={() => giveUp.mutate({ id: it.id, saved_value: saved })}
                   className="absolute top-3 right-3 text-muted-foreground hover:text-destructive transition"
                   title="Mudei de ideia / Desistir"
                 >
@@ -134,11 +182,22 @@ export default function Metas() {
                   />
                 </div>
 
+                {linkedTask && (
+                  <div className="text-xs text-muted-foreground flex items-center gap-1.5 rounded-lg bg-primary/5 border border-primary/10 px-2.5 py-1.5">
+                    <Link2 className="w-3 h-3 text-primary" />
+                    <span className="truncate">
+                      Recompensa: <span className="text-foreground">{linkedTask.title}</span>
+                      {' · '}
+                      {it.reward_type === 'fixed' ? fmt(Number(it.reward_value)) : `${Number(it.reward_value)}%`}
+                    </span>
+                  </div>
+                )}
+
                 <button
-                  onClick={() => del.mutate(it.id)}
+                  onClick={() => giveUp.mutate({ id: it.id, saved_value: saved })}
                   className="text-xs text-muted-foreground hover:text-foreground text-left mt-1 flex items-center gap-1"
                 >
-                  <Wallet className="w-3 h-3" /> Mudei de ideia — liberar para saldo geral
+                  <Wallet className="w-3 h-3" /> Mudei de ideia — mover para o Cofre
                 </button>
               </Card>
             );
