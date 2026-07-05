@@ -10,7 +10,8 @@ import { useTransactions } from '@/hooks/useTransactions';
 import { useTasks, useToggleTask } from '@/hooks/useTasks';
 import { useWishlist } from '@/hooks/useWishlist';
 import { BrainDump } from '@/components/BrainDump';
-import { TrendingUp, TrendingDown, Wallet, Plus, Sparkles } from 'lucide-react';
+import { useVault } from '@/hooks/useVault';
+import { TrendingUp, TrendingDown, Wallet, Plus, Sparkles, PiggyBank } from 'lucide-react';
 
 const fmt = (n: number) => n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
@@ -18,6 +19,7 @@ export default function Dashboard() {
   const { data: transactions = [] } = useTransactions();
   const { data: tasks = [] } = useTasks();
   const { data: wishes = [] } = useWishlist();
+  const { data: vault } = useVault();
   const toggle = useToggleTask();
 
   const stats = useMemo(() => {
@@ -50,10 +52,11 @@ export default function Dashboard() {
 
       <InsightsCard />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <StatCard label="Saldo total" value={fmt(stats.balance)} icon={<Wallet className="w-4 h-4" />} tone="default" />
         <StatCard label="Receitas do mês" value={fmt(stats.income)} icon={<TrendingUp className="w-4 h-4" />} tone="success" />
         <StatCard label="Despesas do mês" value={fmt(stats.expense)} icon={<TrendingDown className="w-4 h-4" />} tone="destructive" />
+        <StatCard label="Cofre de Oportunidades" value={fmt(Number(vault?.balance ?? 0))} icon={<PiggyBank className="w-4 h-4" />} tone="success" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

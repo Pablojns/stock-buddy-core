@@ -43,8 +43,31 @@ export function useToggleTask() {
     mutationFn: async ({ id, completed }: { id: string; completed: boolean }) => {
       const { error } = await supabase.from('tasks').update({ completed }).eq('id', id);
       if (error) throw error;
+
+      // Reward hook: if any wish is linked to this task and it's now completed, credit it
+      if (completed) {
+        const { data: wishes } = await supabase
+          .from('wishlist')
+          .select('id, saved_value, total_value, reward_type, reward_value, title')
+          .eq('reward_task_id', id);
+        if (wishes && wishes.length > 0) {
+          for (const w of wishes) {
+            const rewardValue = Number(w.reward_value) || 0;
+            if (rewardValue <= 0) continue;
+            const add = w.reward_type === 'percent'
+              ? (Number(w.total_value) * rewardValue) / 100
+              : rewardValue;
+            const newSaved = Number(w.saved_value) + add;
+            await supabase.from('wishlist').update({ saved_value: newSaved }).eq('id', w.id);
+            toast.success(`🎁 +${add.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} para "${w.title}"`);
+          }
+        }
+      }
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['tasks'] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['tasks'] });
+      qc.invalidateQueries({ queryKey: ['wishlist'] });
+    },
   });
 }
 

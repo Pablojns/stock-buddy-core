@@ -238,6 +238,27 @@ export type Database = {
         }
         Relationships: []
       }
+      opportunity_vault: {
+        Row: {
+          balance: number
+          created_at: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -395,6 +416,9 @@ export type Database = {
           created_at: string
           id: string
           image_url: string | null
+          reward_task_id: string | null
+          reward_type: string
+          reward_value: number
           saved_value: number
           title: string
           total_value: number
@@ -405,6 +429,9 @@ export type Database = {
           created_at?: string
           id?: string
           image_url?: string | null
+          reward_task_id?: string | null
+          reward_type?: string
+          reward_value?: number
           saved_value?: number
           title: string
           total_value?: number
@@ -415,13 +442,24 @@ export type Database = {
           created_at?: string
           id?: string
           image_url?: string | null
+          reward_task_id?: string | null
+          reward_type?: string
+          reward_value?: number
           saved_value?: number
           title?: string
           total_value?: number
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "wishlist_reward_task_id_fkey"
+            columns: ["reward_task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
