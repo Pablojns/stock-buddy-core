@@ -14,6 +14,7 @@ const nav = [
   { href: '/', label: 'Visão Geral' },
   { href: '/financeiro', label: 'Finanças' },
   { href: '/foco', label: 'Rotina & Foco' },
+  { href: '/metas', label: 'Fábrica de Sonhos' },
   { href: '/notas', label: 'Segundo Cérebro' },
 ];
 
