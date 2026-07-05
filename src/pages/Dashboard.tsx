@@ -10,7 +10,8 @@ import { useTransactions } from '@/hooks/useTransactions';
 import { useTasks, useToggleTask } from '@/hooks/useTasks';
 import { useWishlist } from '@/hooks/useWishlist';
 import { BrainDump } from '@/components/BrainDump';
-import { TrendingUp, TrendingDown, Wallet, Plus, Sparkles } from 'lucide-react';
+import { useVault } from '@/hooks/useVault';
+import { TrendingUp, TrendingDown, Wallet, Plus, Sparkles, PiggyBank } from 'lucide-react';
 
 const fmt = (n: number) => n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
