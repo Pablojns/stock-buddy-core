@@ -7,8 +7,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PageHeader } from '@/components/PageHeader';
 import { useTasks, useCreateTask, useToggleTask, useDeleteTask, Task } from '@/hooks/useTasks';
 import { useHabits, useHabitLogs, useCreateHabit, useToggleHabitLog, useDeleteHabit } from '@/hooks/useHabits';
-import { Trash2, Plus } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Trash2, Plus, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
+
+const HABIT_SUGGESTIONS = ['Treinar', 'Beber 3L de água', 'Revisar código', 'Ler 30min', 'Meditar 10min'];
 
 const BUCKETS: { key: Task['bucket']; label: string }[] = [
   { key: 'today', label: 'Hoje' },
@@ -68,10 +71,10 @@ function BucketColumn({ bucket, label, tasks }: { bucket: Task['bucket']; label:
   };
 
   return (
-    <Card className="p-4">
+    <Card className="p-4 transition-colors hover:border-primary/30">
       <div className="flex justify-between items-center mb-3">
         <h3 className="text-sm font-semibold">{label}</h3>
-        <span className="text-xs text-muted-foreground">{tasks.length}</span>
+        <Badge variant="secondary" className="rounded-full">{tasks.length}</Badge>
       </div>
       <Input
         placeholder="Nova tarefa..."
@@ -82,7 +85,10 @@ function BucketColumn({ bucket, label, tasks }: { bucket: Task['bucket']; label:
       />
       <ul className="space-y-1.5">
         {tasks.map((t) => (
-          <li key={t.id} className="group flex items-center gap-2 py-1.5 px-2 rounded-md hover:bg-secondary/50">
+          <li
+            key={t.id}
+            className="group flex items-center gap-2 py-2 px-2.5 rounded-md border border-transparent transition-all duration-200 hover:bg-secondary/60 hover:border-border hover:-translate-y-0.5 hover:shadow-sm"
+          >
             <Checkbox checked={t.completed} onCheckedChange={(v) => toggle.mutate({ id: t.id, completed: !!v })} />
             <span className={cn('text-sm flex-1', t.completed && 'line-through text-muted-foreground')}>{t.title}</span>
             <Button size="icon" variant="ghost" className="opacity-0 group-hover:opacity-100 h-7 w-7" onClick={() => del.mutate(t.id)}>
@@ -125,7 +131,24 @@ function HabitsBoard() {
       </div>
 
       {habits.length === 0 ? (
-        <p className="text-sm text-muted-foreground text-center py-8">Adicione seu primeiro hábito.</p>
+        <div className="py-6 text-center space-y-3">
+          <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
+            <Sparkles className="w-4 h-4" /> Comece com uma sugestão:
+          </p>
+          <div className="flex flex-wrap gap-2 justify-center">
+            {HABIT_SUGGESTIONS.map((s) => (
+              <Button
+                key={s}
+                variant="outline"
+                size="sm"
+                onClick={() => create.mutate(s)}
+                className="rounded-full"
+              >
+                + {s}
+              </Button>
+            ))}
+          </div>
+        </div>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full min-w-[520px]">

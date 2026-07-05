@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -6,12 +6,14 @@ import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/PageHeader';
 import { TransactionDialog } from '@/components/TransactionDialog';
 import { InsightsCard } from '@/components/InsightsCard';
+import { VaultDialog } from '@/components/VaultDialog';
 import { useTransactions } from '@/hooks/useTransactions';
 import { useTasks, useToggleTask } from '@/hooks/useTasks';
 import { useWishlist } from '@/hooks/useWishlist';
 import { BrainDump } from '@/components/BrainDump';
 import { useVault } from '@/hooks/useVault';
 import { TrendingUp, TrendingDown, Wallet, Plus, Sparkles, PiggyBank } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const fmt = (n: number) => n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
@@ -21,6 +23,7 @@ export default function Dashboard() {
   const { data: wishes = [] } = useWishlist();
   const { data: vault } = useVault();
   const toggle = useToggleTask();
+  const [vaultOpen, setVaultOpen] = useState(false);
 
   const stats = useMemo(() => {
     const now = new Date();
@@ -56,8 +59,10 @@ export default function Dashboard() {
         <StatCard label="Saldo total" value={fmt(stats.balance)} icon={<Wallet className="w-4 h-4" />} tone="default" />
         <StatCard label="Receitas do mês" value={fmt(stats.income)} icon={<TrendingUp className="w-4 h-4" />} tone="success" />
         <StatCard label="Despesas do mês" value={fmt(stats.expense)} icon={<TrendingDown className="w-4 h-4" />} tone="destructive" />
-        <StatCard label="Cofre de Oportunidades" value={fmt(Number(vault?.balance ?? 0))} icon={<PiggyBank className="w-4 h-4" />} tone="success" />
+        <StatCard label="Cofre de Oportunidades" value={fmt(Number(vault?.balance ?? 0))} icon={<PiggyBank className="w-4 h-4" />} tone="success" onClick={() => setVaultOpen(true)} />
       </div>
+      <VaultDialog open={vaultOpen} onOpenChange={setVaultOpen} />
+
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card className="p-5">
@@ -117,10 +122,13 @@ export default function Dashboard() {
   );
 }
 
-function StatCard({ label, value, icon, tone }: { label: string; value: string; icon: React.ReactNode; tone: 'default' | 'success' | 'destructive' }) {
+function StatCard({ label, value, icon, tone, onClick }: { label: string; value: string; icon: React.ReactNode; tone: 'default' | 'success' | 'destructive'; onClick?: () => void }) {
   const toneClass = tone === 'success' ? 'text-primary' : tone === 'destructive' ? 'text-destructive' : 'text-foreground';
   return (
-    <Card className="p-5">
+    <Card
+      onClick={onClick}
+      className={cn('p-5 transition-all', onClick && 'cursor-pointer hover:border-primary/50 hover:shadow-lg hover:-translate-y-0.5')}
+    >
       <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
         {icon} {label}
       </div>
