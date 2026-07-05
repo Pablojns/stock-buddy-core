@@ -131,7 +131,24 @@ function HabitsBoard() {
       </div>
 
       {habits.length === 0 ? (
-        <p className="text-sm text-muted-foreground text-center py-8">Adicione seu primeiro hábito.</p>
+        <div className="py-6 text-center space-y-3">
+          <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
+            <Sparkles className="w-4 h-4" /> Comece com uma sugestão:
+          </p>
+          <div className="flex flex-wrap gap-2 justify-center">
+            {HABIT_SUGGESTIONS.map((s) => (
+              <Button
+                key={s}
+                variant="outline"
+                size="sm"
+                onClick={() => create.mutate(s)}
+                className="rounded-full"
+              >
+                + {s}
+              </Button>
+            ))}
+          </div>
+        </div>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full min-w-[520px]">
