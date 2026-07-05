@@ -31,7 +31,7 @@ function getWeekDates() {
 export default function Tarefas() {
   return (
     <div className="p-6 md:p-8 max-w-6xl mx-auto">
-      <PageHeader title="Tarefas & Hábitos" description="Rotina diária e produtividade" />
+      <PageHeader title="Rotina & Foco" description="Tarefas, hábitos e ritmo do seu dia" />
       <Tabs defaultValue="tasks">
         <TabsList className="mb-4">
           <TabsTrigger value="tasks">Tarefas</TabsTrigger>

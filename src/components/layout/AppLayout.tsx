@@ -131,9 +131,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
         )}
       </header>
 
-      <main className="mx-auto max-w-7xl px-4 md:px-8 py-6 md:py-10">
-        {children}
-      </main>
+      <main>{children}</main>
 
       <CommandMenu open={cmdOpen} onOpenChange={setCmdOpen} />
     </div>
