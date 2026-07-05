@@ -19,6 +19,7 @@ export default function Dashboard() {
   const { data: transactions = [] } = useTransactions();
   const { data: tasks = [] } = useTasks();
   const { data: wishes = [] } = useWishlist();
+  const { data: vault } = useVault();
   const toggle = useToggleTask();
 
   const stats = useMemo(() => {
