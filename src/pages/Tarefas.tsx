@@ -7,8 +7,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PageHeader } from '@/components/PageHeader';
 import { useTasks, useCreateTask, useToggleTask, useDeleteTask, Task } from '@/hooks/useTasks';
 import { useHabits, useHabitLogs, useCreateHabit, useToggleHabitLog, useDeleteHabit } from '@/hooks/useHabits';
-import { Trash2, Plus } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Trash2, Plus, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
+
+const HABIT_SUGGESTIONS = ['Treinar', 'Beber 3L de água', 'Revisar código', 'Ler 30min', 'Meditar 10min'];
 
 const BUCKETS: { key: Task['bucket']; label: string }[] = [
   { key: 'today', label: 'Hoje' },
