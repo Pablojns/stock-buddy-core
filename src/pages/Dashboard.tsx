@@ -8,15 +8,16 @@ import { TransactionDialog } from '@/components/TransactionDialog';
 import { InsightsCard } from '@/components/InsightsCard';
 import { useTransactions } from '@/hooks/useTransactions';
 import { useTasks, useToggleTask } from '@/hooks/useTasks';
-import { useGoals } from '@/hooks/useGoals';
-import { TrendingUp, TrendingDown, Wallet, Plus } from 'lucide-react';
+import { useWishlist } from '@/hooks/useWishlist';
+import { BrainDump } from '@/components/BrainDump';
+import { TrendingUp, TrendingDown, Wallet, Plus, Sparkles } from 'lucide-react';
 
 const fmt = (n: number) => n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
 export default function Dashboard() {
   const { data: transactions = [] } = useTransactions();
   const { data: tasks = [] } = useTasks();
-  const { data: goals = [] } = useGoals();
+  const { data: wishes = [] } = useWishlist();
   const toggle = useToggleTask();
 
   const stats = useMemo(() => {
@@ -33,7 +34,7 @@ export default function Dashboard() {
   }, [transactions]);
 
   const todayTasks = tasks.filter((t) => t.bucket === 'today');
-  const topGoals = goals.filter((g) => g.status === 'active').slice(0, 2);
+  const topWishes = wishes.slice(0, 3);
 
   return (
     <div className="p-6 md:p-8 max-w-7xl mx-auto">
@@ -78,23 +79,36 @@ export default function Dashboard() {
         </Card>
 
         <Card className="p-5">
-          <h2 className="text-sm font-semibold mb-4">Principais metas</h2>
-          {topGoals.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Nenhuma meta ativa.</p>
+          <h2 className="text-sm font-semibold mb-4 flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-primary" /> Fábrica de sonhos
+          </h2>
+          {topWishes.length === 0 ? (
+            <p className="text-sm text-muted-foreground">Nenhum sonho na wishlist ainda.</p>
           ) : (
             <div className="space-y-4">
-              {topGoals.map((g) => (
-                <div key={g.id}>
-                  <div className="flex justify-between text-sm mb-1.5">
-                    <span className="font-medium">{g.title}</span>
-                    <span className="text-muted-foreground">{g.progress}%</span>
+              {topWishes.map((w) => {
+                const total = Number(w.total_value);
+                const saved = Number(w.saved_value);
+                const pct = total > 0 ? Math.min(100, Math.round((saved / total) * 100)) : 0;
+                const remaining = Math.max(0, total - saved);
+                return (
+                  <div key={w.id}>
+                    <div className="flex justify-between text-sm mb-1.5">
+                      <span className="font-medium">{w.title}</span>
+                      <span className="text-muted-foreground">{pct}%</span>
+                    </div>
+                    <Progress value={pct} className="h-2" />
+                    <div className="text-xs text-muted-foreground mt-1">Faltam {fmt(remaining)}</div>
                   </div>
-                  <Progress value={g.progress} className="h-2" />
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </Card>
+      </div>
+
+      <div className="mt-4">
+        <BrainDump />
       </div>
     </div>
   );

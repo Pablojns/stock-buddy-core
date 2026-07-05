@@ -265,6 +265,27 @@ export type Database = {
         }
         Relationships: []
       }
+      quick_notes: {
+        Row: {
+          created_at: string
+          id: string
+          text: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          text: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          text?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       tasks: {
         Row: {
           bucket: string
@@ -365,6 +386,39 @@ export type Database = {
         Update: {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wishlist: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string | null
+          saved_value: number
+          title: string
+          total_value: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          saved_value?: number
+          title: string
+          total_value?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          saved_value?: number
+          title?: string
+          total_value?: number
+          updated_at?: string
           user_id?: string
         }
         Relationships: []

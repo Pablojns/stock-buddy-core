@@ -45,7 +45,7 @@ export function CommandMenu({ open, onOpenChange }: Props) {
           <CommandItem onSelect={() => go('/financeiro')}><Wallet className="mr-2 h-4 w-4" />Finanças</CommandItem>
           <CommandItem onSelect={() => go('/foco')}><Focus className="mr-2 h-4 w-4" />Rotina & Foco</CommandItem>
           <CommandItem onSelect={() => go('/notas')}><Brain className="mr-2 h-4 w-4" />Segundo Cérebro</CommandItem>
-          <CommandItem onSelect={() => go('/metas')}><Target className="mr-2 h-4 w-4" />Metas & Projetos</CommandItem>
+          <CommandItem onSelect={() => go('/metas')}><Target className="mr-2 h-4 w-4" />Fábrica de Sonhos</CommandItem>
         </CommandGroup>
         <CommandSeparator />
         <CommandGroup heading="Ações rápidas">
