@@ -180,8 +180,8 @@ export default function Metas() {
 function WishCard({
   it, tasks, onGiveUp, onUpdate,
 }: {
-  it: ReturnType<typeof useWishlist>['data'] extends (infer U)[] | undefined ? U : never;
-  tasks: ReturnType<typeof useTasks>['data'] extends (infer U)[] | undefined ? U : never[];
+  it: WishlistItem;
+  tasks: Task[];
   onGiveUp: (v: { id: string; saved_value: number }) => void;
   onUpdate: (v: { id: string; saved_value: number }) => void;
 }) {
@@ -190,7 +190,7 @@ function WishCard({
   const remaining = Math.max(0, total - saved);
   const pct = total > 0 ? Math.min(100, Math.round((saved / total) * 100)) : 0;
   const complete = pct >= 100;
-  const linkedTask = (tasks as { id: string; title: string }[]).find((t) => t.id === it.reward_task_id);
+  const linkedTask = tasks.find((t) => t.id === it.reward_task_id);
 
   const [months, setMonths] = useState<number>(12);
   const perMonth = remaining / Math.max(1, months);
