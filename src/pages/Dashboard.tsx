@@ -62,7 +62,7 @@ export default function Dashboard() {
         <StatCard label="Cofre de Oportunidades" value={fmt(Number(vault?.balance ?? 0))} icon={<PiggyBank className="w-4 h-4" />} tone="success" onClick={() => setVaultOpen(true)} />
       </div>
       <VaultDialog open={vaultOpen} onOpenChange={setVaultOpen} />
-      </div>
+
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card className="p-5">
