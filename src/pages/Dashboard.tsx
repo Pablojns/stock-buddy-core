@@ -23,6 +23,7 @@ export default function Dashboard() {
   const { data: wishes = [] } = useWishlist();
   const { data: vault } = useVault();
   const toggle = useToggleTask();
+  const [vaultOpen, setVaultOpen] = useState(false);
 
   const stats = useMemo(() => {
     const now = new Date();
