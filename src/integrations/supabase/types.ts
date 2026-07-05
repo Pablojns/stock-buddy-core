@@ -14,368 +14,129 @@ export type Database = {
   }
   public: {
     Tables: {
-      chat_messages: {
-        Row: {
-          channel: string
-          content: string
-          created_at: string
-          id: string
-          recipient_id: string | null
-          user_id: string
-        }
-        Insert: {
-          channel?: string
-          content: string
-          created_at?: string
-          id?: string
-          recipient_id?: string | null
-          user_id: string
-        }
-        Update: {
-          channel?: string
-          content?: string
-          created_at?: string
-          id?: string
-          recipient_id?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
-      clients: {
-        Row: {
-          cidade: string | null
-          classificacao: string
-          created_at: string
-          email: string | null
-          empresa: string | null
-          frequencia_compra: string | null
-          id: string
-          lead_id: string | null
-          nome_cliente: string
-          produto_recorrente: string | null
-          responsavel: string | null
-          telefone: string | null
-          total_comprado: number
-          total_pedidos: number
-          ultimo_pedido: string | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          cidade?: string | null
-          classificacao?: string
-          created_at?: string
-          email?: string | null
-          empresa?: string | null
-          frequencia_compra?: string | null
-          id?: string
-          lead_id?: string | null
-          nome_cliente: string
-          produto_recorrente?: string | null
-          responsavel?: string | null
-          telefone?: string | null
-          total_comprado?: number
-          total_pedidos?: number
-          ultimo_pedido?: string | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          cidade?: string | null
-          classificacao?: string
-          created_at?: string
-          email?: string | null
-          empresa?: string | null
-          frequencia_compra?: string | null
-          id?: string
-          lead_id?: string | null
-          nome_cliente?: string
-          produto_recorrente?: string | null
-          responsavel?: string | null
-          telefone?: string | null
-          total_comprado?: number
-          total_pedidos?: number
-          ultimo_pedido?: string | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "clients_lead_id_fkey"
-            columns: ["lead_id"]
-            isOneToOne: false
-            referencedRelation: "leads"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      contact_history: {
+      goals: {
         Row: {
           created_at: string
-          descricao: string
-          id: string
-          lead_id: string
-          tipo: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          descricao: string
-          id?: string
-          lead_id: string
-          tipo?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          descricao?: string
-          id?: string
-          lead_id?: string
-          tipo?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "contact_history_lead_id_fkey"
-            columns: ["lead_id"]
-            isOneToOne: false
-            referencedRelation: "leads"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      leads: {
-        Row: {
-          cidade: string | null
-          created_at: string
-          email: string | null
-          empresa: string | null
-          id: string
-          nome_cliente: string
-          observacoes: string | null
-          posicao: number
-          prazo: string | null
-          prioridade: string
-          produto_solicitado: string | null
-          responsavel: string | null
-          status: Database["public"]["Enums"]["lead_status"]
-          telefone: string | null
-          updated_at: string
-          user_id: string
-          valor_estimado: number | null
-        }
-        Insert: {
-          cidade?: string | null
-          created_at?: string
-          email?: string | null
-          empresa?: string | null
-          id?: string
-          nome_cliente: string
-          observacoes?: string | null
-          posicao?: number
-          prazo?: string | null
-          prioridade?: string
-          produto_solicitado?: string | null
-          responsavel?: string | null
-          status?: Database["public"]["Enums"]["lead_status"]
-          telefone?: string | null
-          updated_at?: string
-          user_id: string
-          valor_estimado?: number | null
-        }
-        Update: {
-          cidade?: string | null
-          created_at?: string
-          email?: string | null
-          empresa?: string | null
-          id?: string
-          nome_cliente?: string
-          observacoes?: string | null
-          posicao?: number
-          prazo?: string | null
-          prioridade?: string
-          produto_solicitado?: string | null
-          responsavel?: string | null
-          status?: Database["public"]["Enums"]["lead_status"]
-          telefone?: string | null
-          updated_at?: string
-          user_id?: string
-          valor_estimado?: number | null
-        }
-        Relationships: []
-      }
-      order_items: {
-        Row: {
-          created_at: string
-          id: string
-          is_packed: boolean
-          is_separated: boolean
-          is_shipped: boolean
-          order_id: string
-          product_code: string | null
-          product_id: string | null
-          product_image: string | null
-          product_name: string
-          quantity: number
-          unit_price: number
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          is_packed?: boolean
-          is_separated?: boolean
-          is_shipped?: boolean
-          order_id: string
-          product_code?: string | null
-          product_id?: string | null
-          product_image?: string | null
-          product_name: string
-          quantity?: number
-          unit_price?: number
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          is_packed?: boolean
-          is_separated?: boolean
-          is_shipped?: boolean
-          order_id?: string
-          product_code?: string | null
-          product_id?: string | null
-          product_image?: string | null
-          product_name?: string
-          quantity?: number
-          unit_price?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "order_items_order_id_fkey"
-            columns: ["order_id"]
-            isOneToOne: false
-            referencedRelation: "orders"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "order_items_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "products"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      orders: {
-        Row: {
-          client_document: string | null
-          client_name: string
-          completed_at: string | null
-          created_at: string
-          id: string
-          notes: string | null
-          order_number: string
-          photo_url: string | null
-          status: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          client_document?: string | null
-          client_name: string
-          completed_at?: string | null
-          created_at?: string
-          id?: string
-          notes?: string | null
-          order_number: string
-          photo_url?: string | null
-          status?: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          client_document?: string | null
-          client_name?: string
-          completed_at?: string | null
-          created_at?: string
-          id?: string
-          notes?: string | null
-          order_number?: string
-          photo_url?: string | null
-          status?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      products: {
-        Row: {
-          category: string
-          code: string
-          cost_price: number
-          created_at: string
-          current_quantity: number
+          current_value: number | null
+          deadline: string | null
           description: string | null
-          entry_date: string | null
           id: string
-          last_movement: string | null
-          location_level: string | null
-          location_shelf: string | null
-          location_street: string | null
-          minimum_quantity: number
-          name: string
-          ncm: string | null
-          reserved_quantity: number
-          restock_date: string | null
-          sale_price: number
-          sku: string | null
-          supplier: string | null
+          progress: number
+          status: string
+          target_value: number | null
+          title: string
           updated_at: string
           user_id: string
         }
         Insert: {
-          category?: string
-          code: string
-          cost_price?: number
           created_at?: string
-          current_quantity?: number
+          current_value?: number | null
+          deadline?: string | null
           description?: string | null
-          entry_date?: string | null
           id?: string
-          last_movement?: string | null
-          location_level?: string | null
-          location_shelf?: string | null
-          location_street?: string | null
-          minimum_quantity?: number
-          name: string
-          ncm?: string | null
-          reserved_quantity?: number
-          restock_date?: string | null
-          sale_price?: number
-          sku?: string | null
-          supplier?: string | null
+          progress?: number
+          status?: string
+          target_value?: number | null
+          title: string
           updated_at?: string
           user_id: string
         }
         Update: {
-          category?: string
-          code?: string
-          cost_price?: number
           created_at?: string
-          current_quantity?: number
+          current_value?: number | null
+          deadline?: string | null
           description?: string | null
-          entry_date?: string | null
           id?: string
-          last_movement?: string | null
-          location_level?: string | null
-          location_shelf?: string | null
-          location_street?: string | null
-          minimum_quantity?: number
+          progress?: number
+          status?: string
+          target_value?: number | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      habit_logs: {
+        Row: {
+          created_at: string
+          date: string
+          habit_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          habit_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          habit_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "habit_logs_habit_id_fkey"
+            columns: ["habit_id"]
+            isOneToOne: false
+            referencedRelation: "habits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      habits: {
+        Row: {
+          color: string | null
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          id?: string
           name?: string
-          ncm?: string | null
-          reserved_quantity?: number
-          restock_date?: string | null
-          sale_price?: number
-          sku?: string | null
-          supplier?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notes: {
+        Row: {
+          content: string | null
+          created_at: string
+          id: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          title?: string
           updated_at?: string
           user_id?: string
         }
@@ -408,52 +169,74 @@ export type Database = {
         }
         Relationships: []
       }
-      stock_movements: {
+      tasks: {
         Row: {
+          bucket: string
+          completed: boolean
           created_at: string
+          due_date: string | null
           id: string
-          new_quantity: number
-          notes: string | null
-          previous_quantity: number
-          product_id: string
-          product_name: string
-          quantity: number
-          type: string
+          title: string
+          updated_at: string
           user_id: string
         }
         Insert: {
+          bucket?: string
+          completed?: boolean
           created_at?: string
+          due_date?: string | null
           id?: string
-          new_quantity?: number
-          notes?: string | null
-          previous_quantity?: number
-          product_id: string
-          product_name: string
-          quantity: number
-          type?: string
+          title: string
+          updated_at?: string
           user_id: string
         }
         Update: {
+          bucket?: string
+          completed?: boolean
           created_at?: string
+          due_date?: string | null
           id?: string
-          new_quantity?: number
-          notes?: string | null
-          previous_quantity?: number
-          product_id?: string
-          product_name?: string
-          quantity?: number
-          type?: string
+          title?: string
+          updated_at?: string
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "stock_movements_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "products"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string
+          date: string
+          description: string
+          id: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          category: string
+          created_at?: string
+          date?: string
+          description: string
+          id?: string
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string
+          date?: string
+          description?: string
+          id?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {
