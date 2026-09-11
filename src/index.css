@@ -1,56 +1,59 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
 @layer base {
   :root {
-    /* Obsidian / zinc premium dark palette (not pure black) */
-    --background: 240 6% 7%;
-    --foreground: 240 5% 96%;
+    /* Skyrim / taverna escura */
+    --background: 33 22% 8%;
+    --foreground: 40 30% 86%;
 
-    --card: 240 5% 11%;
-    --card-foreground: 240 5% 96%;
+    --card: 30 20% 11%;
+    --card-foreground: 40 30% 86%;
 
-    --popover: 240 6% 9%;
-    --popover-foreground: 240 5% 96%;
+    --popover: 30 22% 10%;
+    --popover-foreground: 40 30% 86%;
 
-    --primary: 152 70% 55%;
-    --primary-foreground: 240 10% 6%;
+    --primary: 45 53% 55%;
+    --primary-foreground: 33 30% 8%;
 
-    --secondary: 240 4% 16%;
-    --secondary-foreground: 240 5% 96%;
+    --secondary: 32 18% 16%;
+    --secondary-foreground: 40 30% 86%;
 
-    --muted: 240 4% 14%;
-    --muted-foreground: 240 5% 62%;
+    --muted: 32 15% 15%;
+    --muted-foreground: 40 14% 62%;
 
-    --accent: 262 70% 68%;
-    --accent-foreground: 240 5% 96%;
+    --accent: 20 45% 30%;
+    --accent-foreground: 45 53% 70%;
 
-    --destructive: 0 72% 55%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 4 62% 42%;
+    --destructive-foreground: 40 30% 92%;
 
-    --success: 152 70% 45%;
-    --success-foreground: 0 0% 98%;
+    --success: 120 25% 40%;
+    --success-foreground: 40 30% 92%;
 
-    --warning: 38 92% 55%;
-    --warning-foreground: 240 10% 6%;
+    --warning: 38 70% 50%;
+    --warning-foreground: 33 30% 8%;
 
-    --border: 240 4% 17%;
-    --input: 240 4% 17%;
-    --ring: 152 70% 55%;
+    --border: 40 25% 22%;
+    --input: 40 25% 22%;
+    --ring: 45 53% 55%;
 
-    --radius: 0.85rem;
+    --radius: 0.35rem;
 
-    --sidebar-background: 240 6% 7%;
-    --sidebar-foreground: 240 5% 90%;
-    --sidebar-primary: 152 70% 55%;
-    --sidebar-primary-foreground: 240 10% 6%;
-    --sidebar-accent: 240 4% 14%;
-    --sidebar-accent-foreground: 240 5% 96%;
-    --sidebar-border: 240 4% 15%;
-    --sidebar-ring: 152 70% 55%;
+    --sidebar-background: 33 22% 8%;
+    --sidebar-foreground: 40 30% 86%;
+    --sidebar-primary: 45 53% 55%;
+    --sidebar-primary-foreground: 33 30% 8%;
+    --sidebar-accent: 32 18% 16%;
+    --sidebar-accent-foreground: 40 30% 86%;
+    --sidebar-border: 40 25% 22%;
+    --sidebar-ring: 45 53% 55%;
+
+    --gradient-parchment: linear-gradient(160deg, hsl(35 22% 14%), hsl(30 20% 10%));
+    --shadow-forge: 0 18px 40px -22px hsl(0 0% 0% / 0.9);
   }
 }
 
@@ -58,20 +61,30 @@
   * { @apply border-border; }
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Inter', system-ui, sans-serif;
-    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    font-family: 'Crimson Text', Georgia, serif;
     background-image:
-      radial-gradient(ellipse 80% 50% at 50% -20%, hsl(152 70% 55% / 0.06), transparent),
-      radial-gradient(ellipse 60% 40% at 100% 0%, hsl(262 70% 68% / 0.05), transparent);
+      radial-gradient(ellipse 70% 45% at 50% -10%, hsl(45 53% 55% / 0.10), transparent),
+      radial-gradient(ellipse 60% 40% at 0% 100%, hsl(20 45% 30% / 0.14), transparent);
     background-attachment: fixed;
+  }
+  h1, h2, h3, h4, .font-display {
+    font-family: 'Cinzel', 'Times New Roman', serif;
+    letter-spacing: 0.04em;
   }
 }
 
 @layer utilities {
-  .glass {
-    @apply bg-background/60 backdrop-blur-xl border border-border/60;
+  .parchment {
+    background-image: var(--gradient-parchment);
+    @apply border border-border/80 rounded-md;
+    box-shadow: var(--shadow-forge);
   }
-  .card-premium {
-    @apply bg-card/80 backdrop-blur-sm border border-border/60 rounded-2xl shadow-[0_1px_0_0_hsl(0_0%_100%/0.03)_inset,0_20px_40px_-20px_hsl(240_10%_0%/0.5)];
+  .rune-divider {
+    @apply h-px w-full;
+    background: linear-gradient(90deg, transparent, hsl(var(--primary) / 0.55), transparent);
+  }
+  .gold-text {
+    color: hsl(var(--primary));
+    text-shadow: 0 0 18px hsl(var(--primary) / 0.28);
   }
 }
