@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { Trash2 } from 'lucide-react';
+import { BookOpen, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -39,7 +39,7 @@ export function ScrollsTab({ store }: { store: HeroStore }) {
 
   return (
     <div className="space-y-5">
-      <div className="parchment space-y-2 p-4">
+      <div className="parchment animate-slide-down space-y-2 p-4">
         <Input placeholder="Título do pergaminho" value={title} onChange={(e) => setTitle(e.target.value)} />
         <Textarea
           placeholder="Escreva livremente, viajante..."
@@ -54,21 +54,24 @@ export function ScrollsTab({ store }: { store: HeroStore }) {
       </div>
 
       {state.scrolls.length === 0 ? (
-        <p className="py-10 text-center text-sm text-muted-foreground">A estante está vazia.</p>
+        <div className="flex flex-col items-center gap-3 py-12 text-center">
+          <BookOpen className="h-10 w-10 text-primary/50" />
+          <p className="font-display text-sm text-muted-foreground">A estante está vazia.</p>
+        </div>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2">
           {state.scrolls.map((n) => (
-            <article key={n.id} className="parchment p-4">
+            <article key={n.id} className="parchment edge-blue card-hover p-4">
               <div className="flex items-start gap-2">
                 <h3 className="min-w-0 flex-1 font-display text-sm gold-text">{n.title}</h3>
-                <Button size="icon" variant="ghost" onClick={() => remove(n.id)} aria-label="Queimar pergaminho">
+                <Button size="icon" variant="ghost" onClick={() => remove(n.id)} aria-label="Queimar pergaminho" className="h-8 w-8 hover:text-destructive">
                   <Trash2 className="h-3.5 w-3.5 text-muted-foreground" />
                 </Button>
               </div>
               {n.date && (
-                <p className="mt-0.5 text-[11px] text-muted-foreground">
+                <span className="badge-date mt-1">
                   {new Date(`${n.date}T00:00:00`).toLocaleDateString('pt-BR')}
-                </p>
+                </span>
               )}
               <div className="rune-divider my-2" />
               <p className="whitespace-pre-wrap text-sm text-foreground/90">{n.body}</p>
