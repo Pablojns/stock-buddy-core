@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { Check, Swords, Trash2 } from 'lucide-react';
+import { Check, ScrollText, Swords, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { HeroStore } from '@/hooks/useHeroState';
@@ -45,7 +45,7 @@ export function QuestsTab({ store }: { store: HeroStore }) {
 
   return (
     <div className="space-y-5">
-      <div className="parchment space-y-2 p-4">
+      <div className="parchment animate-slide-down space-y-2 p-4">
         <h2 className="font-display text-sm gold-text">Nova missão</h2>
         <Input placeholder="Nome da missão" value={name} onChange={(e) => setName(e.target.value)} />
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_110px_auto]">
@@ -56,26 +56,35 @@ export function QuestsTab({ store }: { store: HeroStore }) {
       </div>
 
       {pending.length === 0 && done.length === 0 && (
-        <p className="py-10 text-center text-sm text-muted-foreground">
-          Nenhuma missão no diário. O destino aguarda.
-        </p>
+        <div className="flex flex-col items-center gap-3 py-12 text-center">
+          <ScrollText className="h-10 w-10 text-primary/50" />
+          <p className="font-display text-sm text-muted-foreground">
+            Nenhuma missão no diário. O destino aguarda.
+          </p>
+        </div>
       )}
 
       <div className="space-y-2">
         {pending.map((q) => (
-          <div key={q.id} className="parchment flex items-center gap-3 p-3">
-            <Swords className="h-4 w-4 shrink-0 text-primary" />
-            <div className="min-w-0 flex-1">
-              <p className="truncate font-display text-sm">{q.name}</p>
-              <p className="truncate text-xs text-muted-foreground">Recompensa: {q.reward}</p>
+          <div key={q.id} className="parchment edge-gold card-hover p-3">
+            <div className="flex items-center gap-3">
+              <Swords className="h-4 w-4 shrink-0 text-primary" />
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-display text-sm">{q.name}</p>
+              </div>
+              <span className="badge-xp shrink-0">+{q.xp} XP</span>
+              <Button size="icon" variant="complete" onClick={() => complete(q)} aria-label="Completar missão" className="h-8 w-8">
+                <Check className="h-4 w-4" />
+              </Button>
+              <Button size="icon" variant="ghost" onClick={() => remove(q.id)} aria-label="Descartar missão" className="h-8 w-8 hover:text-destructive">
+                <Trash2 className="h-4 w-4 text-muted-foreground" />
+              </Button>
             </div>
-            <span className="shrink-0 font-display text-xs gold-text">+{q.xp}</span>
-            <Button size="icon" variant="ghost" onClick={() => complete(q)} aria-label="Completar missão">
-              <Check className="h-4 w-4" />
-            </Button>
-            <Button size="icon" variant="ghost" onClick={() => remove(q.id)} aria-label="Descartar missão">
-              <Trash2 className="h-4 w-4 text-muted-foreground" />
-            </Button>
+            {q.reward && (
+              <div className="mt-2 rounded-sm border border-primary/40 bg-primary/10 px-2.5 py-1.5 font-display text-xs text-primary">
+                🍖 Recompensa: {q.reward}
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -85,10 +94,11 @@ export function QuestsTab({ store }: { store: HeroStore }) {
           <div className="rune-divider" />
           <h3 className="font-display text-xs text-muted-foreground">Feitos concluídos</h3>
           {done.map((q) => (
-            <div key={q.id} className="flex items-center gap-3 rounded-md border border-border/60 p-2.5 opacity-60">
-              <Check className="h-4 w-4 shrink-0 text-primary" />
+            <div key={q.id} className="edge-green card-hover flex items-center gap-3 rounded-md border border-border/60 p-2.5 opacity-70">
+              <Check className="h-4 w-4 shrink-0 text-success" />
               <span className="min-w-0 flex-1 truncate text-sm line-through">{q.name}</span>
-              <span className="shrink-0 text-xs text-muted-foreground">{q.reward}</span>
+              <span className="badge-done shrink-0">Concluído</span>
+              <span className="badge-xp shrink-0">+{q.xp}</span>
             </div>
           ))}
         </div>
