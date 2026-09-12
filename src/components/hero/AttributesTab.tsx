@@ -27,7 +27,7 @@ export function AttributesTab({ store }: { store: HeroStore }) {
     <div className="space-y-5">
       <div className="grid gap-3 sm:grid-cols-3">
         {STATS.map(({ key, label, icon: Icon }) => (
-          <div key={key} className="parchment p-4 text-center">
+          <div key={key} className="parchment edge-gold card-hover p-4 text-center">
             <Icon className="mx-auto h-5 w-5 text-primary" />
             <p className="mt-2 font-display text-xs text-muted-foreground">{label}</p>
             <p className="font-display text-2xl font-bold gold-text">{state.attributes[key]}</p>
@@ -77,11 +77,14 @@ export function AttributesTab({ store }: { store: HeroStore }) {
           <ul className="space-y-2">
             {history.map((q) => (
               <li key={q.id} className="flex items-center gap-2 text-sm">
+                <span className="badge-done shrink-0">Feito</span>
                 <span className="min-w-0 flex-1 truncate">{q.name}</span>
-                <span className="shrink-0 text-xs text-muted-foreground">
-                  {q.completedAt ? new Date(q.completedAt).toLocaleDateString('pt-BR') : ''}
-                </span>
-                <span className="shrink-0 font-display text-xs gold-text">+{q.xp}</span>
+                {q.completedAt && (
+                  <span className="badge-date shrink-0">
+                    {new Date(q.completedAt).toLocaleDateString('pt-BR')}
+                  </span>
+                )}
+                <span className="badge-xp shrink-0">+{q.xp}</span>
               </li>
             ))}
           </ul>

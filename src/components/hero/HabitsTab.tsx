@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { Trash2 } from 'lucide-react';
+import { Flame, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -38,13 +38,16 @@ export function HabitsTab({ store }: { store: HeroStore }) {
 
   return (
     <div className="space-y-5">
-      <div className="parchment flex gap-2 p-4">
+      <div className="parchment animate-slide-down flex gap-2 p-4">
         <Input placeholder="Novo hábito" value={name} onChange={(e) => setName(e.target.value)} />
         <Button onClick={addHabit}>Jurar</Button>
       </div>
 
       {state.habits.length === 0 ? (
-        <p className="py-10 text-center text-sm text-muted-foreground">Nenhum juramento firmado.</p>
+        <div className="flex flex-col items-center gap-3 py-12 text-center">
+          <Flame className="h-10 w-10 text-primary/50" />
+          <p className="font-display text-sm text-muted-foreground">Nenhum juramento firmado.</p>
+        </div>
       ) : (
         <div className="parchment overflow-x-auto p-3">
           <table className="w-full border-separate border-spacing-1">
@@ -82,7 +85,7 @@ export function HabitsTab({ store }: { store: HeroStore }) {
                             className={cn(
                               'h-6 w-6 rounded-sm border transition-colors',
                               active
-                                ? 'border-primary bg-primary/80'
+                                ? 'border-success bg-success/80'
                                 : 'border-border bg-secondary/60 hover:bg-secondary',
                               i + 1 === currentDay && !active && 'ring-1 ring-primary/60',
                             )}

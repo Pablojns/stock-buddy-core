@@ -24,7 +24,9 @@ export function HeroHeader({ xp, level, rank, balance }: HeroHeaderProps) {
           </div>
           <div className="text-right">
             <div className="font-display text-xs text-muted-foreground">Nível</div>
-            <div className="font-display text-xl font-bold gold-text leading-none">{level}</div>
+            <div className="level-glow mx-auto mt-0.5 flex h-8 w-8 items-center justify-center rounded-sm border border-primary/60 bg-primary/15 font-display text-lg font-bold gold-text leading-none">
+              {level}
+            </div>
           </div>
         </div>
 
