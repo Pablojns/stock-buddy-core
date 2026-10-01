@@ -9,9 +9,19 @@ import {
 
 const STORAGE_KEY = 'life-os-hero-diary';
 
+function getSafeStorage(): Storage | null {
+  try {
+    return window.localStorage;
+  } catch {
+    return null;
+  }
+}
+
 function load(): HeroState {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const storage = getSafeStorage();
+    if (!storage) return initialState;
+    const raw = storage.getItem(STORAGE_KEY);
     if (!raw) return initialState;
     return { ...initialState, ...(JSON.parse(raw) as Partial<HeroState>) };
   } catch {
@@ -25,7 +35,10 @@ export function useHeroState() {
   const levelRef = useRef(levelFromXp(state.xp));
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    const storage = getSafeStorage();
+    if (storage) {
+      storage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
   }, [state]);
 
   useEffect(() => {
